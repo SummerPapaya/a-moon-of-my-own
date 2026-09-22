@@ -1,0 +1,3198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>我有一只月亮 · 挂在遥远天上</title>
+<meta name="description" content="时间长河中的月亮——中文诗歌、中文歌曲与世界诗乐，皆沐同一片月光。">
+<meta property="og:title" content="我有一只月亮，挂在遥远天上">
+<meta property="og:description" content="时间长河中的月亮——溯游千年诗乐，收拢一笺月光。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#07090f">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f0ea;
+  --gold:#d8c9a3;
+  --dim:rgba(244,240,234,.55);
+  --faint:rgba(244,240,234,.32);
+  --serif:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+  --kai:"Kaiti SC","KaiTi","STKaiti","Noto Serif SC","Songti SC",serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  background:#07090f;
+  color:var(--paper);
+  font-family:var(--serif);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  overscroll-behavior:none;
+}
+canvas.webgl{position:fixed;inset:0;z-index:0;display:block;touch-action:none;}
+
+/* ---------- 左侧竖排题字 ---------- */
+.site-title{
+  position:fixed;z-index:6;left:40px;top:52px;
+  writing-mode:vertical-rl;pointer-events:none;
+  font-family:var(--kai);
+  user-select:none;
+}
+.site-title h1{
+  font-size:44px;font-weight:600;letter-spacing:.34em;
+  color:rgba(244,240,234,.86);
+  text-shadow:0 0 34px rgba(243,233,207,.10);
+  font-style:normal;
+}
+.site-title p{
+  margin-right:22px;font-size:15px;letter-spacing:.5em;
+  color:rgba(244,240,234,.42);
+}
+
+/* ---------- 模式切换 pill ---------- */
+.mode-switch{
+  position:fixed;z-index:8;top:24px;left:50%;transform:translateX(-50%);
+  display:flex;gap:4px;padding:5px;
+  background:rgba(18,20,30,.38);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(244,240,234,.13);
+  border-radius:999px;
+  box-shadow:0 6px 30px rgba(0,0,0,.35);
+}
+.mode-switch button{
+  appearance:none;cursor:pointer;border:none;background:transparent;
+  font-family:var(--serif);font-size:14px;letter-spacing:.22em;text-indent:.22em;
+  color:var(--dim);padding:8px 20px;border-radius:999px;
+  transition:color .5s ease,background .5s ease;
+  white-space:nowrap;
+}
+.mode-switch button.on{
+  color:var(--gold);
+  background:rgba(216,201,163,.13);
+}
+
+/* ---------- 专题 chips ---------- */
+.chips{
+  position:fixed;z-index:8;top:78px;left:50%;transform:translateX(-50%);
+  display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+  max-width:92vw;
+  transition:opacity .6s ease;
+}
+.chips button{
+  appearance:none;cursor:pointer;
+  background:rgba(255,255,255,.04);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(244,240,234,.11);
+  border-radius:999px;
+  font-family:var(--serif);font-size:12.5px;letter-spacing:.14em;text-indent:.14em;
+  color:rgba(244,240,234,.5);
+  padding:6px 16px;
+  transition:color .5s ease,border-color .5s ease,background .5s ease;
+  white-space:nowrap;
+}
+.chips button.on{color:var(--gold);border-color:rgba(216,201,163,.4);background:rgba(216,201,163,.08);}
+.chips.hidden{opacity:0;pointer-events:none;}
+
+/* ---------- 漂浮条目 ---------- */
+.entries{position:fixed;inset:0;z-index:4;pointer-events:none;overflow:hidden;}
+.particle-ink{
+  position:fixed;inset:0;z-index:3;pointer-events:none;
+  opacity:0;transition:opacity .9s ease;
+  mix-blend-mode:screen;
+}
+.particle-ink.on{opacity:.88;}
+.entry{
+  position:absolute;left:0;top:0;pointer-events:auto;cursor:pointer;
+  max-width:300px;
+  will-change:transform,opacity;
+  transition:color .6s ease;
+  user-select:none;
+}
+.entry::before{ /* 极淡暗色衬底，亮星带前仍可读 */
+  content:"";position:absolute;inset:-20px -30px;z-index:-1;
+  background:radial-gradient(ellipse 60% 56% at 50% 50%, rgba(4,6,12,.40), rgba(4,6,12,0) 72%);
+  border-radius:50%;
+}
+.entry .q{
+  font-size:15.5px;line-height:1.9;letter-spacing:.06em;
+  color:rgba(244,240,234,.78);
+  text-shadow:0 1px 3px rgba(2,4,10,.9), 0 0 16px rgba(2,4,10,.7), 0 1px 12px rgba(0,0,0,.7);
+  transition:color .6s ease,text-shadow .6s ease;
+}
+.entry .m{
+  margin-top:7px;font-size:11px;letter-spacing:.12em;
+  color:var(--faint);
+  font-style:normal;
+  transition:color .6s ease;
+}
+.entry.active .q{color:var(--gold);text-shadow:0 0 22px rgba(216,201,163,.28);}
+.entry.active .m{color:rgba(216,201,163,.6);}
+.entry:not(.active):hover .q{color:rgba(244,240,234,.95);}
+.entry.just-collected .q,.entry.just-collected .qo{animation:collectedPulse 1.4s ease;}
+@keyframes collectedPulse{30%{color:var(--gold);text-shadow:0 0 30px rgba(216,201,163,.55);}}
+
+/* 世界版条目：原文（西文 EB Garamond 斜体 / 日文明朝体）+ 中译（绝不斜体）+ 出处 */
+.entry .qo{
+  font-family:"EB Garamond","Noto Serif SC",serif;font-style:italic;
+  font-size:15.5px;line-height:1.75;letter-spacing:.03em;
+  color:rgba(244,240,234,.8);
+  text-shadow:0 1px 3px rgba(2,4,10,.9), 0 0 16px rgba(2,4,10,.7), 0 1px 12px rgba(0,0,0,.7);
+  transition:color .6s ease,text-shadow .6s ease;
+}
+.entry .qo.jp{
+  font-style:normal;letter-spacing:.1em;
+  font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP","Noto Serif SC",serif;
+}
+.entry .qt{
+  margin-top:5px;font-size:13px;line-height:1.8;letter-spacing:.05em;font-style:normal;
+  color:rgba(244,240,234,.58);
+  text-shadow:0 1px 3px rgba(2,4,10,.9), 0 0 14px rgba(2,4,10,.7);
+  transition:color .6s ease;
+}
+.entry.active .qo{color:var(--gold);text-shadow:0 0 22px rgba(216,201,163,.28);}
+.entry.active .qt{color:rgba(216,201,163,.5);}
+.entry:not(.active):hover .qo{color:rgba(244,240,234,.95);}
+
+/* 世界篇/时间长河：压缩每条“原文 + 译文 + 出处”的占地面积，避免在星河中互相压叠 */
+body[data-mode="world"] .entry,body[data-mode="river"] .entry{max-width:252px;}
+body[data-mode="world"] .entry::before,body[data-mode="river"] .entry::before{inset:-13px -20px;}
+body[data-mode="world"] .entry .qo,body[data-mode="river"] .entry .qo{
+  font-size:13.2px;line-height:1.58;letter-spacing:.02em;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
+body[data-mode="world"] .entry .qt,body[data-mode="river"] .entry .qt{
+  margin-top:4px;font-size:11.3px;line-height:1.58;letter-spacing:.04em;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+body[data-mode="world"] .entry .m,body[data-mode="river"] .entry .m{
+  margin-top:5px;font-size:9.5px;letter-spacing:.08em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* 世界篇/时间长河聚光文字改为低位置的横排“字幕”，不再用大面积竖排占据画面 */
+body[data-mode="world"] .spot,body[data-mode="river"] .spot{
+  left:clamp(24px,6.5vw,92px);top:auto;bottom:132px;transform:none;
+  writing-mode:horizontal-tb;
+  max-width:min(520px,44vw);max-height:32vh;
+  padding:2px 0 2px 18px;
+  border-left:1px solid rgba(216,201,163,.24);
+  font-size:clamp(17px,1.55vw,21px);
+  line-height:1.75;letter-spacing:.08em;
+  background:linear-gradient(90deg,rgba(4,6,12,.24),rgba(4,6,12,0) 78%);
+}
+body[data-mode="world"] .spot .who,body[data-mode="river"] .spot .who{
+  display:block;margin:0 0 8px;
+  font-size:clamp(10.5px,1vw,12.5px);letter-spacing:.18em;
+}
+body[data-mode="world"] .spot-verse,body[data-mode="river"] .spot-verse{display:flex;flex-direction:column;gap:7px;white-space:normal;}
+body[data-mode="world"] .spot-verse .orig,body[data-mode="river"] .spot-verse .orig{
+  font-family:"EB Garamond","Noto Serif SC",serif;font-style:italic;
+  font-size:1.02em;line-height:1.55;
+}
+body[data-mode="world"] .spot-verse .trans,body[data-mode="river"] .spot-verse .trans{
+  font-size:.72em;line-height:1.7;color:rgba(244,240,234,.62);
+}
+
+.era{
+  position:absolute;left:0;top:0;pointer-events:none;
+  will-change:transform,opacity;
+  font-family:var(--kai);
+  font-size:13px;letter-spacing:.5em;text-indent:.5em;
+  color:rgba(216,201,163,.5);
+  writing-mode:vertical-rl;
+  text-shadow:0 0 14px rgba(216,201,163,.18);
+}
+.era .sub{
+  font-family:"EB Garamond",serif;font-size:10px;letter-spacing:.2em;
+  color:rgba(244,240,234,.28);margin-top:10px;writing-mode:vertical-rl;
+}
+.era.yr{writing-mode:horizontal-tb;}
+.era.yr .sub{display:none;}
+
+/* ---------- 左中竖排大字浮现 ---------- */
+.spot{
+  position:fixed;z-index:5;pointer-events:none;
+  left:calc(max(15vw,150px) );top:50%;transform:translateY(-50%);
+  writing-mode:vertical-rl;
+  font-family:var(--kai);
+  font-size:clamp(22px,3.2vw,34px);
+  letter-spacing:.42em;line-height:2.1;
+  color:rgba(244,240,234,.85);
+  text-shadow:0 1px 4px rgba(2,4,10,.85), 0 0 26px rgba(2,4,10,.55), 0 0 40px rgba(243,233,207,.14);
+  max-height:74vh;overflow:hidden;
+  opacity:0;transition:opacity 1s ease;
+  user-select:none;
+}
+.spot.show{opacity:1;}
+.spot .who{
+  margin-right:30px;font-size:clamp(11px,1.2vw,14px);letter-spacing:.34em;
+  color:rgba(216,201,163,.55);
+}
+.spot-verse{display:inline-block;white-space:pre-wrap;}
+
+/* ---------- 底部提示 ---------- */
+.hint{
+  position:fixed;z-index:6;bottom:80px;left:50%;transform:translateX(-50%);
+  font-size:12.5px;letter-spacing:.42em;text-indent:.42em;
+  color:rgba(244,240,234,.34);
+  pointer-events:none;
+  transition:opacity 1.4s ease;
+  animation:hintBreathe 5.2s ease-in-out infinite;
+  white-space:nowrap;
+}
+@keyframes hintBreathe{0%,100%{opacity:.5}50%{opacity:1}}
+.hint.gone{opacity:0 !important;animation:none;}
+
+/* ---------- 着陆页 ---------- */
+.mode-switch,.chips,.entries{transition:opacity .9s ease;}
+body.landing .mode-switch,body.landing .chips,body.landing .entries{opacity:0 !important;pointer-events:none !important;}
+body.landing .entry{pointer-events:none !important;}
+.site-title h1{transition:font-size 1.5s ease,color 1.5s ease;}
+.site-title p{transition:font-size 1.5s ease,color 1.5s ease;}
+body.landing .site-title h1{font-size:58px;color:rgba(244,240,234,.94);text-shadow:0 0 44px rgba(243,233,207,.16);}
+body.landing .site-title p{font-size:17px;color:rgba(244,240,234,.5);}
+body.landing .hint{animation:hintBreathe 2s ease-in-out infinite;bottom:44px;}
+
+/* ---------- 黑场过渡 ---------- */
+.veil{
+  position:fixed;inset:0;z-index:20;background:#04050a;
+  opacity:0;pointer-events:none;
+  transition:opacity .6s ease;
+}
+.veil.on{opacity:1;}
+
+.locked *{cursor:default !important;}
+
+/* ==================== 署名说明 + 拾月集（摘抄本） ==================== */
+.credit-note{
+  position:fixed;z-index:8;right:26px;bottom:82px;
+  font-size:10.5px;letter-spacing:.16em;text-align:right;line-height:1.9;
+  color:rgba(216,201,163,.34);user-select:none;pointer-events:none;
+  text-shadow:0 1px 3px rgba(2,4,10,.8);
+}
+.notebook-btn{
+  position:fixed;z-index:9;right:22px;bottom:26px;
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--kai);font-size:13.5px;letter-spacing:.24em;text-indent:.06em;
+  color:rgba(216,201,163,.72);
+  background:rgba(10,14,24,.42);
+  border:1px solid rgba(216,201,163,.26);border-radius:999px;
+  padding:8px 18px 8px 16px;cursor:pointer;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  transition:color .5s,border-color .5s,box-shadow .5s;
+}
+.notebook-btn:hover{color:rgba(243,233,207,.95);border-color:rgba(216,201,163,.5);box-shadow:0 0 24px rgba(216,201,163,.10);}
+.nb-count{
+  min-width:18px;height:18px;border-radius:999px;
+  display:none;align-items:center;justify-content:center;
+  font-size:10.5px;letter-spacing:0;text-indent:0;
+  background:rgba(216,201,163,.9);color:#0a0d18;padding:0 5px;
+}
+.nb-count.on{display:inline-flex;}
+.nb-count.bump{animation:nbBump .6s ease;}
+@keyframes nbBump{30%{transform:scale(1.35);}100%{transform:scale(1);}}
+body.landing .credit-note,body.landing .notebook-btn{opacity:0 !important;pointer-events:none !important;}
+.credit-note,.notebook-btn{transition:opacity 1.2s ease;}
+.notebook-btn{transition:opacity 1.2s ease,color .5s,border-color .5s,box-shadow .5s;}
+
+/* 底部时间线滚轮：快速溯游 */
+.timeline-scrub{
+  position:fixed;z-index:5;left:0;right:0;bottom:0;height:64px;cursor:ew-resize;
+  opacity:0;pointer-events:none;transition:opacity 1.2s ease;
+  touch-action:none;
+}
+body:not(.landing) .timeline-scrub{opacity:1;pointer-events:auto;}
+.timeline-scrub.ts-off{opacity:0 !important;pointer-events:none !important;}
+.ts-band{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(7,10,22,.28) 34%,rgba(8,12,26,.55));
+  border-top:1px solid rgba(190,202,240,.06);
+}
+.ts-ticks{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.ts-tick{position:absolute;bottom:14px;width:1px;transform:translateX(-.5px);background:rgba(198,208,238,.15);}
+.ts-tick.mj{height:15px;background:rgba(216,226,252,.34);box-shadow:0 0 4px rgba(190,205,250,.18);}
+.ts-tick.mn{height:7px;}
+.ts-lab{position:absolute;bottom:33px;transform:translateX(-50%);
+  font-family:"Courier New",monospace;font-size:9.5px;letter-spacing:.14em;
+  color:rgba(210,220,248,.38);white-space:nowrap;}
+.ts-line{position:absolute;left:0;right:0;bottom:21px;height:1px;
+  background:linear-gradient(90deg,rgba(190,202,240,.02),rgba(208,220,250,.16) 10%,rgba(208,220,250,.16) 90%,rgba(190,202,240,.02));}
+.ts-dot{
+  position:absolute;bottom:15px;left:0;width:13px;height:13px;border-radius:50%;
+  background:radial-gradient(circle at 38% 32%, #fff6da, #d9b96e 74%);
+  box-shadow:0 0 12px rgba(233,201,122,.75);
+  transform:translateX(-50%);
+}
+.timeline-scrub:hover .ts-dot{box-shadow:0 0 22px rgba(233,201,122,.95);}
+.ts-year{position:absolute;bottom:46px;left:0;transform:translateX(-50%);
+  font-family:"Courier New",monospace;font-size:11px;letter-spacing:.18em;
+  color:rgba(240,226,186,.66);text-shadow:0 0 9px rgba(233,201,122,.30);
+  white-space:nowrap;pointer-events:none;}
+@media (max-width:768px){
+  .ts-lab{font-size:8.5px;letter-spacing:.08em;}
+  .ts-lab.v{writing-mode:vertical-rl;font-size:9px;letter-spacing:.12em;}
+  .ts-year{font-size:10px;bottom:50px;}
+}
+
+/* 月之声：无歌词月夜环境音 */
+.moon-audio{
+  position:fixed;z-index:9;right:22px;bottom:134px;
+  display:flex;flex-direction:column;gap:7px;align-items:flex-end;
+  transition:opacity 1.2s ease;
+}
+body.landing .moon-audio{opacity:0 !important;pointer-events:none !important;}
+.moon-audio .au-row{display:flex;gap:8px;}
+.au-toggle,.au-next{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--kai);font-size:12.5px;letter-spacing:.18em;text-indent:.04em;
+  color:rgba(216,201,163,.72);
+  background:rgba(10,14,24,.42);
+  border:1px solid rgba(216,201,163,.26);border-radius:999px;
+  padding:7px 15px 7px 13px;cursor:pointer;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  transition:color .5s,border-color .5s,box-shadow .5s,opacity .4s;
+}
+.au-toggle:hover,.au-next:hover{color:rgba(243,233,207,.95);border-color:rgba(216,201,163,.5);}
+.au-toggle .au-dot{width:7px;height:7px;border-radius:50%;background:rgba(216,201,163,.32);flex:0 0 auto;transition:background .4s,box-shadow .4s;}
+.moon-audio.on .au-dot{background:#e8d9ae;box-shadow:0 0 9px rgba(232,217,174,.85);}
+.moon-audio:not(.on) .au-next{opacity:.45;}
+.au-credit{
+  font-size:9.5px;letter-spacing:.12em;color:rgba(216,201,163,.30);
+  padding-right:6px;user-select:none;pointer-events:none;
+  text-shadow:0 1px 3px rgba(2,4,10,.8);
+}
+@media (max-width:768px){
+  .moon-audio{right:10px;bottom:72px;gap:5px;}
+  .au-toggle,.au-next{font-size:11px;padding:5px 11px 5px 10px;}
+  .au-credit{font-size:8px;}
+}
+
+/* 收进拾月集：跟随聚光文字出现的小按钮 */
+.collect-btn{
+  position:fixed;z-index:7;
+  font-family:var(--kai);font-size:12.5px;letter-spacing:.2em;
+  color:rgba(216,201,163,.62);
+  background:rgba(10,14,24,.32);
+  border:1px solid rgba(216,201,163,.24);border-radius:999px;
+  padding:6px 15px 6px 16px;cursor:pointer;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  opacity:0;transform:translateY(-4px);pointer-events:none;
+  transition:opacity .9s ease .45s,transform .9s ease .45s,color .4s,border-color .4s;
+}
+.collect-btn.show{opacity:1;transform:none;pointer-events:auto;}
+.collect-btn:hover{color:rgba(243,233,207,.95);border-color:rgba(216,201,163,.5);}
+.collect-btn.done{color:rgba(216,201,163,.85);border-color:rgba(216,201,163,.42);pointer-events:none;}
+
+/* 拾月集抽屉 */
+.notebook{
+  position:fixed;z-index:30;top:0;right:0;bottom:0;
+  width:min(400px,88vw);
+  background:linear-gradient(200deg,rgba(10,13,22,.94),rgba(6,8,14,.96));
+  border-left:1px solid rgba(216,201,163,.16);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  transform:translateX(102%);transition:transform .7s cubic-bezier(.22,.8,.24,1);
+  display:flex;flex-direction:column;
+  box-shadow:-30px 0 80px rgba(0,0,0,.5);
+}
+.notebook.open{transform:none;}
+.nb-head{padding:30px 28px 18px;border-bottom:1px solid rgba(216,201,163,.12);position:relative;}
+.nb-title{font-family:var(--kai);font-size:21px;letter-spacing:.4em;color:rgba(243,233,207,.92);}
+.nb-sub{margin-top:8px;font-size:11px;letter-spacing:.2em;color:var(--faint);}
+.nb-close{
+  position:absolute;right:20px;top:26px;width:34px;height:34px;border-radius:50%;
+  background:none;border:1px solid rgba(216,201,163,.22);color:rgba(216,201,163,.7);
+  font-size:17px;cursor:pointer;transition:color .4s,border-color .4s;
+}
+.nb-close:hover{color:rgba(243,233,207,.95);border-color:rgba(216,201,163,.5);}
+.nb-list{flex:1;overflow-y:auto;padding:10px 24px 20px;scrollbar-width:thin;scrollbar-color:rgba(216,201,163,.25) transparent;}
+.nb-list::-webkit-scrollbar{width:4px;}
+.nb-list::-webkit-scrollbar-thumb{background:rgba(216,201,163,.22);border-radius:2px;}
+.nb-empty{
+  padding:60px 10px;text-align:center;line-height:2.4;
+  font-family:var(--kai);font-size:13.5px;letter-spacing:.14em;color:var(--faint);
+}
+.nb-item{
+  position:relative;margin:14px 0;padding:16px 40px 14px 18px;
+  border:1px solid rgba(216,201,163,.12);border-radius:4px;
+  background:linear-gradient(160deg,rgba(216,201,163,.05),rgba(216,201,163,.015));
+  animation:nbIn .7s ease both;
+}
+@keyframes nbIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.nb-text{font-family:var(--kai);font-size:14.5px;line-height:2;letter-spacing:.06em;color:rgba(244,240,234,.88);}
+.nb-text .nb-orig{display:block;font-family:"EB Garamond","Noto Serif SC",serif;font-style:italic;font-size:13.5px;line-height:1.8;}
+.nb-text .nb-trans{display:block;font-size:12.5px;color:rgba(244,240,234,.6);margin-top:4px;}
+.nb-who{margin-top:9px;font-size:11px;letter-spacing:.12em;color:rgba(216,201,163,.55);}
+.nb-who .nb-meta{margin-left:8px;color:rgba(244,240,234,.28);}
+.nb-del{
+  position:absolute;right:10px;top:10px;width:26px;height:26px;border-radius:50%;
+  background:none;border:none;color:rgba(244,240,234,.3);font-size:14px;cursor:pointer;
+  transition:color .3s,background .3s;
+}
+.nb-del:hover{color:rgba(243,233,207,.9);background:rgba(216,201,163,.12);}
+.nb-foot{padding:16px 24px 22px;border-top:1px solid rgba(216,201,163,.12);text-align:center;}
+.nb-credit{font-size:10.5px;letter-spacing:.14em;color:rgba(216,201,163,.32);margin-bottom:12px;}
+.nb-download{
+  font-family:var(--kai);font-size:13px;letter-spacing:.3em;text-indent:.3em;
+  color:rgba(216,201,163,.85);background:none;cursor:pointer;
+  border:1px solid rgba(216,201,163,.35);border-radius:999px;padding:9px 26px;
+  transition:color .4s,border-color .4s,box-shadow .4s;
+}
+.nb-download:hover{color:#0a0d18;background:rgba(216,201,163,.88);box-shadow:0 0 30px rgba(216,201,163,.15);}
+.nb-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.nb-list{position:relative;}
+.nb-grip{
+  position:absolute;left:6px;top:50%;transform:translateY(-50%);
+  width:22px;height:44px;display:flex;align-items:center;justify-content:center;
+  color:rgba(216,201,163,.3);font-size:12px;letter-spacing:1px;line-height:1;
+  cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;
+  writing-mode:vertical-rl;transition:color .3s;
+}
+.nb-grip:hover{color:rgba(216,201,163,.75);}
+.nb-item{padding-left:32px;}
+.nb-item.dragging{
+  position:absolute;left:0;right:0;z-index:6;margin:0;
+  background:linear-gradient(160deg,rgba(30,36,58,.97),rgba(20,25,42,.97));
+  border-color:rgba(216,201,163,.45);box-shadow:0 14px 40px rgba(0,0,0,.55),0 0 24px rgba(216,201,163,.12);
+  cursor:grabbing;animation:none;
+}
+.nb-item.nb-placeholder{
+  border:1px dashed rgba(216,201,163,.25);background:rgba(216,201,163,.03);animation:none;
+}
+.nb-item.dragging .nb-grip{color:rgba(216,201,163,.85);cursor:grabbing;}
+
+/* ---- 笺纸图片设计器 ---- */
+.nb-maker{
+  position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;
+  background:rgba(5,7,14,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  opacity:0;pointer-events:none;transition:opacity .5s ease;padding:20px;
+}
+.nb-maker.open{opacity:1;pointer-events:auto;}
+.nbm-panel{
+  width:min(860px,94vw);max-height:92vh;display:flex;flex-direction:column;
+  background:linear-gradient(170deg,rgba(18,22,38,.98),rgba(10,13,24,.98));
+  border:1px solid rgba(216,201,163,.18);border-radius:10px;
+  box-shadow:0 30px 90px rgba(0,0,0,.6),0 0 60px rgba(216,201,163,.06);
+  transform:translateY(14px);transition:transform .5s ease;
+}
+.nb-maker.open .nbm-panel{transform:none;}
+.nbm-head{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:24px 28px 16px;border-bottom:1px solid rgba(216,201,163,.12);
+}
+.nbm-title{font-family:var(--kai);font-size:19px;letter-spacing:.4em;color:rgba(243,233,207,.92);}
+.nbm-sub{margin-top:7px;font-size:11px;letter-spacing:.18em;color:var(--faint);}
+.nbm-body{display:flex;gap:26px;padding:22px 28px 26px;overflow:hidden;}
+.nbm-preview{
+  flex:0 0 auto;display:flex;align-items:flex-start;justify-content:center;
+  max-height:calc(92vh - 160px);overflow:hidden;border-radius:4px;
+  box-shadow:0 10px 40px rgba(0,0,0,.5);
+}
+.nbm-preview canvas{display:block;width:270px;height:auto;border-radius:4px;}
+.nbm-opts{flex:1;min-width:0;display:flex;flex-direction:column;gap:18px;overflow-y:auto;scrollbar-width:thin;}
+.nbm-label{font-family:var(--serif);font-size:13px;letter-spacing:.3em;color:rgba(216,201,163,.7);margin-bottom:10px;}
+.nbm-row{display:flex;flex-wrap:wrap;gap:9px;}
+.nbm-chip{
+  font-family:var(--serif);font-weight:400;font-size:12.5px;letter-spacing:.14em;cursor:pointer;
+  color:rgba(244,240,234,.72);background:rgba(216,201,163,.05);
+  border:1px solid rgba(216,201,163,.18);border-radius:999px;padding:7px 15px;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:color .3s,border-color .3s,background .3s,box-shadow .3s;
+}
+.nbm-chip:hover{border-color:rgba(216,201,163,.45);color:rgba(243,233,207,.95);}
+.nbm-chip.on{
+  color:rgba(20,24,40,.95);background:rgba(216,201,163,.9);border-color:rgba(216,201,163,.9);
+  box-shadow:0 0 18px rgba(216,201,163,.18);
+}
+.nbm-chip .dot{width:13px;height:13px;border-radius:50%;border:1px solid rgba(255,255,255,.35);flex:0 0 auto;}
+.nbm-chip.on .dot{border-color:rgba(20,24,40,.4);}
+.nbm-save{margin-top:6px;align-self:flex-start;}
+.nbm-hint{font-size:10.5px;letter-spacing:.12em;color:rgba(216,201,163,.3);}
+
+@media (max-width:768px){
+  .site-title{writing-mode:horizontal-tb;left:16px;top:14px;display:flex;align-items:baseline;gap:12px;}
+  .site-title h1{font-size:19px;letter-spacing:.2em;}
+  .site-title p{margin:0;font-size:10.5px;letter-spacing:.24em;}
+  .mode-switch{top:50px;max-width:calc(100vw - 12px);padding:4px;gap:2px;}
+  .mode-switch button{font-size:12px;letter-spacing:.08em;text-indent:.08em;padding:7px 10px;}
+  .chips{top:98px;gap:6px;width:290px;max-width:92vw;}
+  .chips button{font-size:10.5px;padding:4px 10px;}
+  .entry{max-width:210px;}
+  .entry .q{font-size:13px;line-height:1.8;}
+  .entry .qo{font-size:13.5px;line-height:1.7;}
+  .entry .qt{font-size:11.5px;line-height:1.7;}
+  body[data-mode="world"] .entry,body[data-mode="river"] .entry{max-width:190px;}
+  body[data-mode="world"] .entry .qo,body[data-mode="river"] .entry .qo{font-size:12.2px;line-height:1.5;}
+  body[data-mode="world"] .entry .qt,body[data-mode="river"] .entry .qt{font-size:10.5px;line-height:1.5;}
+  body[data-mode="world"] .spot,body[data-mode="river"] .spot{left:18px;bottom:118px;max-width:56vw;max-height:26vh;font-size:15px;padding-left:14px;}
+  body.landing .site-title h1{font-size:26px;}
+  body.landing .site-title p{font-size:11px;}
+  .spot{left:14px;font-size:20px;max-height:62vh;}
+  .spot .who{margin-right:16px;}
+  .hint{font-size:11px;bottom:78px;letter-spacing:.3em;text-indent:.3em;}
+  body.landing .hint{bottom:28px;}
+  .credit-note{right:12px;bottom:134px;font-size:8.5px;letter-spacing:.08em;line-height:1.7;}
+  .notebook-btn{right:12px;bottom:14px;font-size:12px;padding:7px 14px 7px 13px;}
+  .notebook{width:min(400px,94vw);}
+  .nb-actions{gap:8px;}
+  .nb-download{font-size:12px;padding:8px 18px;letter-spacing:.2em;text-indent:.2em;}
+  .nbm-body{flex-direction:column;align-items:center;gap:18px;overflow-y:auto;}
+  .nbm-preview{max-height:44vh;}
+  .nbm-preview canvas{width:min(220px,56vw);}
+  .nbm-opts{width:100%;overflow:visible;}
+  .nbm-save{align-self:center;}
+  .nbm-hint{text-align:center;}
+}
+
+/* ==================== 农历月相标签（着陆页阴影交互） ==================== */
+.lunar-label{
+  position:fixed;z-index:9;left:50%;top:50%;transform:translate(0,-50%);
+  display:flex;flex-direction:row;align-items:flex-start;gap:.9em;pointer-events:none;
+  opacity:0;transition:opacity .6s ease;
+  font-family:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+  text-shadow:0 1px 12px rgba(3,5,10,.8);
+}
+.lunar-label.show{opacity:1;}
+.lunar-label .ll-date{font-size:30px;letter-spacing:.3em;color:#d8c9a3;font-weight:600;writing-mode:vertical-rl;}
+.lunar-label .ll-phase{font-size:15px;letter-spacing:.5em;color:rgba(244,240,234,.62);writing-mode:vertical-rl;padding-top:.35em;}
+
+/* ==================== 定制鼠标指针 ==================== */
+@media (pointer:fine){
+  body, body *{cursor:none !important;}
+}
+.cursor-dot,.cursor-ring{
+  position:fixed;z-index:60;left:0;top:0;pointer-events:none;
+  border-radius:50%;opacity:0;transition:opacity .4s ease;
+  will-change:transform;
+}
+.cursor-dot{
+  width:6px;height:6px;margin:-3px 0 0 -3px;
+  background:#f6f2e6;
+  box-shadow:0 0 10px 2px rgba(246,242,230,.55),0 0 26px 6px rgba(246,242,230,.18);
+}
+.cursor-ring{
+  width:30px;height:30px;margin:-15px 0 0 -15px;
+  border:1px solid rgba(244,240,234,.42);
+  transition:opacity .4s ease,width .5s ease,height .5s ease,margin .5s ease,border-color .5s ease;
+}
+.cursor-ring.hovering{
+  width:46px;height:46px;margin:-23px 0 0 -23px;
+  border-color:rgba(216,201,163,.85);
+}
+.cursor-ripple{
+  position:fixed;z-index:59;left:0;top:0;pointer-events:none;border-radius:50%;
+  border:1px solid rgba(246,242,230,.75);
+  animation:cursorRipple .62s cubic-bezier(.2,.6,.3,1) forwards;
+}
+@keyframes cursorRipple{
+  0%{transform:translate(-50%,-50%) scale(.25);opacity:.9;}
+  100%{transform:translate(-50%,-50%) scale(1);opacity:0;}
+}
+</style>
+</head>
+<body class="landing" data-mode="poem">
+<div class="site-title">
+  <h1>我有一只月亮</h1>
+  <p>挂在遥远天上</p>
+</div>
+<div class="mode-switch" id="modeSwitch">
+  <button data-mode="river">时间长河</button>
+  <button data-mode="poem" class="on">中文诗歌</button>
+  <button data-mode="song">中文歌曲</button>
+  <button data-mode="world">世界诗乐</button>
+</div>
+<div class="chips" id="chips"></div>
+<div class="entries" id="entries"></div>
+<canvas class="particle-ink" id="particleInk"></canvas>
+<div class="spot" id="spot"></div>
+<div class="hint" id="hint">点击月亮 · 进入时间长河</div>
+<div class="timeline-scrub" id="tscrub">
+  <div class="ts-band"></div>
+  <div class="ts-ticks" id="tsTicks"></div>
+  <div class="ts-line"></div>
+  <div class="ts-dot" id="tsDot"></div>
+  <div class="ts-year" id="tsYear"></div>
+</div>
+<div class="credit-note">诗歌署名 · 皆为作者｜歌曲 · 演唱与词曲并署<br>世界诗乐 · 译文附译者</div>
+<div class="moon-audio" id="moonAudio">
+  <div class="au-credit">音频 · 月夜环境音（无词）· AI 生成</div>
+  <div class="au-row">
+    <button class="au-toggle" id="auToggle" title="开 / 关"><span class="au-dot"></span><span id="auLabel">听听月亮的声音</span></button>
+    <button class="au-next" id="auNext" title="换一段">换一段</button>
+  </div>
+</div>
+<button class="notebook-btn" id="notebookBtn">拾月集<span class="nb-count" id="nbCount"></span></button>
+<button class="collect-btn" id="collectBtn">收进拾月集</button>
+<div class="notebook" id="notebook">
+  <div class="nb-head">
+    <div class="nb-title">拾月集</div>
+    <div class="nb-sub">沿途拾月，满笺清辉</div>
+    <button class="nb-close" id="nbClose" aria-label="关闭">×</button>
+  </div>
+  <div class="nb-list" id="nbList"></div>
+  <div class="nb-foot">
+    <div class="nb-credit">诗歌署名为作者 · 歌曲署名为演唱者</div>
+    <div class="nb-actions">
+      <button class="nb-download" id="nbDownload">存为文字 TXT</button>
+      <button class="nb-download" id="nbImage">制成笺纸图片</button>
+    </div>
+  </div>
+</div>
+<div class="nb-maker" id="nbMaker">
+  <div class="nbm-panel">
+    <div class="nbm-head">
+      <div>
+        <div class="nbm-title">制成笺纸</div>
+        <div class="nbm-sub">择一色、一纹、一轮月，收拢此刻的月光</div>
+      </div>
+      <button class="nb-close" id="nbmClose" aria-label="关闭">×</button>
+    </div>
+    <div class="nbm-body">
+      <div class="nbm-preview"><canvas id="nbmCanvas" width="1240" height="1754"></canvas></div>
+      <div class="nbm-opts">
+        <div class="nbm-group"><div class="nbm-label">底色</div><div class="nbm-row" id="nbmBgs"></div></div>
+        <div class="nbm-group"><div class="nbm-label">花纹</div><div class="nbm-row" id="nbmPats"></div></div>
+        <div class="nbm-group"><div class="nbm-label">月相</div><div class="nbm-row" id="nbmMoons"></div></div>
+        <button class="nb-download nbm-save" id="nbmSave">保存图片 JPG</button>
+        <div class="nbm-hint">文字取自当前拾月集 · 顺序与笺中一致</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="veil" id="veil"></div>
+<div class="lunar-label" id="lunarLabel"><span class="ll-date"></span><span class="ll-phase"></span></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+/* ============================================================
+   我有一只月亮 · Three.js 沉浸式 3D 版
+   ============================================================ */
+
+/* ---------------- 数据 ---------------- */
+const PHASE_ANGLE = { full:0, crescent:130, waning:-130, half:80, 'half-waning':-80, new:180 };
+
+const POEMS = [
+ {t:'月出皎兮，佼人僚兮。舒窈纠兮，劳心悄兮。', a:'佚名', s:'诗经·陈风·月出', d:'先秦', themes:['月出'], phase:'full'},
+ {t:'明月何皎皎，照我罗床帏。忧愁不能寐，揽衣起徘徊。', a:'佚名', s:'古诗十九首·明月何皎皎', d:'汉', themes:['月出'], phase:'full'},
+ {t:'日月之行，若出其中。星汉灿烂，若出其里。', a:'曹操', s:'观沧海', d:'汉', themes:['月出'], phase:'full'},
+ {t:'春江潮水连海平，海上明月共潮生。', a:'张若虚', s:'春江花月夜', d:'唐', themes:['月出'], phase:'full'},
+ {t:'海上生明月，天涯共此时。情人怨遥夜，竟夕起相思。', a:'张九龄', s:'望月怀远', d:'唐', themes:['中秋的月亮'], phase:'full'},
+ {t:'峨眉山月半轮秋，影入平羌江水流。', a:'李白', s:'峨眉山月歌', d:'唐', themes:['李白的月亮'], phase:'half'},
+ {t:'床前明月光，疑是地上霜。举头望明月，低头思故乡。', a:'李白', s:'静夜思', d:'唐', themes:['李白的月亮'], phase:'full'},
+ {t:'小时不识月，呼作白玉盘。又疑瑶台镜，飞在青云端。', a:'李白', s:'古朗月行', d:'唐', themes:['李白的月亮'], phase:'full'},
+ {t:'花间一壶酒，独酌无相亲。举杯邀明月，对影成三人。', a:'李白', s:'月下独酌·其一', d:'唐', themes:['李白的月亮'], phase:'full'},
+ {t:'明月出天山，苍茫云海间。长风几万里，吹度玉门关。', a:'李白', s:'关山月', d:'唐', themes:['李白的月亮','边关的月亮'], phase:'full'},
+ {t:'青天有月来几时？我今停杯一问之。', a:'李白', s:'把酒问月', d:'唐', themes:['李白的月亮'], phase:'full'},
+ {t:'我寄愁心与明月，随君直到夜郎西。', a:'李白', s:'闻王昌龄左迁龙标遥有此寄', d:'唐', themes:['李白的月亮'], phase:'full'},
+ {t:'牛渚西江夜，青天无片云。登舟望秋月，空忆谢将军。', a:'李白', s:'夜泊牛渚怀古', d:'唐', themes:['李白的月亮'], phase:'full'},
+ {t:'移舟泊烟渚，日暮客愁新。野旷天低树，江清月近人。', a:'孟浩然', s:'宿建德江', d:'唐', themes:['月出'], phase:'full'},
+ {t:'秦时明月汉时关，万里长征人未还。', a:'王昌龄', s:'出塞', d:'唐', themes:['边关的月亮'], phase:'full'},
+ {t:'明月松间照，清泉石上流。', a:'王维', s:'山居秋暝', d:'唐', themes:['月出'], phase:'full'},
+ {t:'戍鼓断人行，边秋一雁声。露从今夜白，月是故乡明。', a:'杜甫', s:'月夜忆舍弟', d:'唐', themes:['中秋的月亮'], phase:'full'},
+ {t:'今夜鄜州月，闺中只独看。遥怜小儿女，未解忆长安。', a:'杜甫', s:'月夜', d:'唐', themes:['月出'], phase:'full'},
+ {t:'星垂平野阔，月涌大江流。', a:'杜甫', s:'旅夜书怀', d:'唐', themes:['月出'], phase:'full'},
+ {t:'中庭地白树栖鸦，冷露无声湿桂花。今夜月明人尽望，不知秋思落谁家。', a:'王建', s:'十五夜望月', d:'唐', themes:['中秋的月亮'], phase:'full'},
+ {t:'回乐烽前沙似雪，受降城外月如霜。', a:'李益', s:'夜上受降城闻笛', d:'唐', themes:['边关的月亮'], phase:'full'},
+ {t:'大漠沙如雪，燕山月似钩。何当金络脑，快走踏清秋。', a:'李贺', s:'马诗·其五', d:'唐', themes:['边关的月亮'], phase:'crescent'},
+ {t:'一道残阳铺水中，半江瑟瑟半江红。可怜九月初三夜，露似真珠月似弓。', a:'白居易', s:'暮江吟', d:'唐', themes:['月出'], phase:'crescent'},
+ {t:'东船西舫悄无言，唯见江心秋月白。', a:'白居易', s:'琵琶行', d:'唐', themes:['月出'], phase:'full'},
+ {t:'烟笼寒水月笼沙，夜泊秦淮近酒家。', a:'杜牧', s:'泊秦淮', d:'唐', themes:['月出'], phase:'full'},
+ {t:'无言独上西楼，月如钩。寂寞梧桐深院锁清秋。', a:'李煜', s:'相见欢', d:'五代', themes:['月出'], phase:'crescent'},
+ {t:'小楼昨夜又东风，故国不堪回首月明中。', a:'李煜', s:'虞美人', d:'五代', themes:['月出'], phase:'full'},
+ {t:'今宵酒醒何处？杨柳岸，晓风残月。', a:'柳永', s:'雨霖铃', d:'宋', themes:['月出'], phase:'waning'},
+ {t:'明月楼高休独倚，酒入愁肠，化作相思泪。', a:'范仲淹', s:'苏幕遮·怀旧', d:'宋', themes:['月出'], phase:'full'},
+ {t:'疏影横斜水清浅，暗香浮动月黄昏。', a:'林逋', s:'山园小梅', d:'宋', themes:['月出'], phase:'full'},
+ {t:'春风又绿江南岸，明月何时照我还。', a:'王安石', s:'泊船瓜洲', d:'宋', themes:['月出'], phase:'full'},
+ {t:'沙上并禽池上暝，云破月来花弄影。', a:'张先', s:'天仙子', d:'宋', themes:['月出'], phase:'full'},
+ {t:'明月几时有？把酒问青天。', a:'苏轼', s:'水调歌头', d:'宋', themes:['苏轼的月亮','中秋的月亮'], phase:'full'},
+ {t:'人有悲欢离合，月有阴晴圆缺，此事古难全。但愿人长久，千里共婵娟。', a:'苏轼', s:'水调歌头', d:'宋', themes:['苏轼的月亮','中秋的月亮'], phase:'full'},
+ {t:'缺月挂疏桐，漏断人初静。谁见幽人独往来，缥缈孤鸿影。', a:'苏轼', s:'卜算子·黄州定慧院寓居作', d:'宋', themes:['苏轼的月亮'], phase:'waning'},
+ {t:'何夜无月？何处无竹柏？但少闲人如吾两人者耳。', a:'苏轼', s:'记承天寺夜游', d:'宋', themes:['苏轼的月亮'], phase:'full'},
+ {t:'当时明月在，曾照彩云归。', a:'晏几道', s:'临江仙', d:'宋', themes:['月出'], phase:'full'},
+ {t:'明月别枝惊鹊，清风半夜鸣蝉。', a:'辛弃疾', s:'西江月·夜行黄沙道中', d:'宋', themes:['月出'], phase:'full'},
+ {t:'三十功名尘与土，八千里路云和月。', a:'岳飞', s:'满江红', d:'宋', themes:['月出'], phase:'full'},
+ {t:'二十四桥仍在，波心荡、冷月无声。', a:'姜夔', s:'扬州慢', d:'宋', themes:['月出'], phase:'full'},
+ {t:'辛苦最怜天上月，一昔如环，昔昔都成玦。', a:'纳兰性德', s:'蝶恋花', d:'清', themes:['月出'], phase:'full'},
+ {t:'霜风呼呼的吹着，月光明明的照着。', a:'沈尹默', s:'月夜', d:'现代', themes:['月出'], phase:'full'},
+ {t:'月儿呀！你好像把镀金的镰刀，你把这海上的松树斫倒了，哦，我也被你斫倒了！', a:'郭沫若', s:'新月与白云', d:'现代', themes:['月出'], phase:'crescent'},
+ {t:'正是“花好，月圆，人寿，”何来惆怅？', a:'冰心', s:'中秋前三日', d:'现代', themes:['中秋的月亮'], phase:'full'},
+ {t:'月儿，你休学新娘羞，把锦被掩盖你光艳首。', a:'徐志摩', s:'月下待杜鹃不来', d:'现代', themes:['月出'], phase:'waning'},
+ {t:'我望见有两个月亮：一般的样，不同的相。', a:'徐志摩', s:'两个月亮', d:'现代', themes:['月出'], phase:'full'},
+ {t:'你站在桥上看风景，看风景的人在楼上看你。明月装饰了你的窗子，你装饰了别人的梦。', a:'卞之琳', s:'断章', d:'现代', themes:['月出'], phase:'full'},
+ {t:'树枝想去撕裂天空，却只戳了几个微小的窟窿，它透出天外的光亮，人们把它叫做月亮和星星。', a:'顾城', s:'星月的来由', d:'现代', themes:['月出'], phase:'new'},
+ {t:'月亮将半个脸挂在天上，像刚刚大病一场。', a:'顾城', s:'残月', d:'现代', themes:['月出'], phase:'waning'},
+ {t:'人在月光里容易梦游，渴望得到也懂得温柔。', a:'舒婷', s:'中秋夜', d:'现代', themes:['中秋的月亮'], phase:'full'},
+ {t:'我看着月亮，月亮看着我。我向她微笑，她不动声色。', a:'顾城', s:'月亮和我', d:'现代', themes:['月出'], phase:'full'},
+ {t:'青青的野葡萄，淡黄的小月亮。', a:'顾城', s:'安慰', d:'现代', themes:['月出'], phase:'crescent'},
+ {t:'为什么圆晶晶的中秋月，要一刀挥成了残缺？', a:'余光中', s:'中秋', d:'现代', themes:['中秋的月亮'], phase:'half'},
+ {t:'我的思念是圆的，八月中秋的月亮，也是最亮最圆的。', a:'艾青', s:'我的思念是圆的', d:'现代', themes:['中秋的月亮'], phase:'full'},
+ {t:'我曾踏月而来，只因你在山中。', a:'席慕蓉', s:'山月', d:'现代', themes:['月出'], phase:'full'},
+ {t:'击鼓之后，我们把在黑暗中跳舞的心脏叫做月亮。', a:'海子', s:'亚洲铜', d:'现代', themes:['月出'], phase:'full'},
+ {t:'今夜美丽的月光，你看多好！', a:'海子', s:'月光', d:'现代', themes:['月出'], phase:'full'},
+ {t:'月光下，大海涌起爱的潮汐。', a:'王家新', s:'潮汐', d:'现代', themes:['月出'], phase:'full'},
+ {t:'在月光下相爱就是不幸。月亮是对亡灵的优雅重获。', a:'欧阳江河', s:'花瓶，月亮', d:'现代', themes:['月出'], phase:'full'},
+ {t:'天空含着一个古老的月亮，我含着一颗怀乡的心。', a:'李少君', s:'远望', d:'现代', themes:['月出'], phase:'full'},
+];
+/* 诗歌系年（约作年，用于「时间长河」合并排序） */
+const POEM_Y = {
+ '佚名|诗经·陈风·月出':-700, '佚名|古诗十九首·明月何皎皎':150, '曹操|观沧海':207,
+ '张若虚|春江花月夜':670, '张九龄|望月怀远':733,
+ '李白|峨眉山月歌':724, '李白|静夜思':726, '李白|古朗月行':741, '李白|月下独酌·其一':744, '李白|关山月':735,
+ '李白|把酒问月':752, '李白|闻王昌龄左迁龙标遥有此寄':753, '李白|夜泊牛渚怀古':762,
+ '孟浩然|宿建德江':730, '王昌龄|出塞':725, '王维|山居秋暝':745,
+ '杜甫|月夜':756, '杜甫|月夜忆舍弟':759, '杜甫|旅夜书怀':765,
+ '李益|夜上受降城闻笛':780, '王建|十五夜望月':800, '李贺|马诗·其五':812,
+ '白居易|琵琶行':816, '白居易|暮江吟':822, '杜牧|泊秦淮':830,
+ '李煜|相见欢':975, '李煜|虞美人':978, '柳永|雨霖铃':1004, '林逋|山园小梅':1020, '范仲淹|苏幕遮·怀旧':1040,
+ '张先|天仙子':1041, '王安石|泊船瓜洲':1075,
+ '苏轼|水调歌头':1076, '苏轼|卜算子·黄州定慧院寓居作':1080, '苏轼|记承天寺夜游':1083,
+ '晏几道|临江仙':1105, '岳飞|满江红':1134, '姜夔|扬州慢':1176, '辛弃疾|西江月·夜行黄沙道中':1189,
+ '纳兰性德|蝶恋花':1677,
+ '沈尹默|月夜':1918, '郭沫若|新月与白云':1919, '冰心|中秋前三日':1922, '徐志摩|月下待杜鹃不来':1923,
+ '徐志摩|两个月亮':1925, '卞之琳|断章':1935,
+ '顾城|星月的来由':1968, '顾城|残月':1970, '舒婷|中秋夜':1976, '顾城|月亮和我':1979, '顾城|安慰':1980,
+ '余光中|中秋':1980, '艾青|我的思念是圆的':1983, '席慕蓉|山月':1983, '海子|亚洲铜':1984, '海子|月光':1986,
+ '王家新|潮汐':1989, '欧阳江河|花瓶，月亮':1989, '李少君|远望':2005,
+};
+const SONGS = [
+ {t:'半个月亮爬上来，咿啦啦，爬上来。', a:'王洛宾', s:'半个月亮爬上来', y:1939, cr:'民歌 · 王洛宾 整理改编', phase:'half'},
+ {t:'浮云散，明月照人来。团圆美满，今朝醉。', a:'周璇', s:'月圆花好', y:1940, cr:'范烟桥 词 · 严华 曲', phase:'full'},
+ {t:'夜色茫茫罩四周，天边新月如钩。', a:'吴莺音', s:'明月千里寄相思', y:1947, cr:'金流 词曲', phase:'crescent'},
+ {t:'你问我爱你有多深，我爱你有几分。你去想一想，你去看一看，月亮代表我的心。', a:'邓丽君', s:'月亮代表我的心', y:1977, cr:'孙仪 词 · 翁清溪 曲', phase:'full'},
+ {t:'明月几时有？把酒问青天。但愿人长久，千里共婵娟。', a:'邓丽君', s:'但愿人长久', y:1983, cr:'苏轼 词 · 梁弘志 曲', phase:'full'},
+ {t:'月亮在我窗前荡漾，透进了爱的光芒，我低头静静地想一想，猜不透你心肠，好像今晚月亮一样，忽明忽暗又忽亮。', a:'蔡琴', s:'月光小夜曲', y:1983, cr:'周蓝萍 填词 · 原曲《莎韵之钟》', phase:'full'},
+ {t:'一样的月光……谁能告诉我，是我们改变了世界，还是世界改变了我和你。', a:'苏芮', s:'一样的月光', y:1983, cr:'吴念真、罗大佑 词 · 李寿全 曲', phase:'full'},
+ {t:'十五的月亮，照在家乡，照在边关。', a:'董文华', s:'十五的月亮', y:1984, cr:'石祥 词 · 铁源、徐锡宜 曲', phase:'full'},
+ {t:'月半弯，好浪漫，月光下的你显得特别的好看。', a:'张学友', s:'月半弯', y:1986, cr:'卡龙 词 · 玉置浩二 曲', phase:'half'},
+ {t:'仍然倚在失眠夜，望天边星宿。仍然听见小提琴，如泣似诉再挑逗。', a:'李克勤', s:'月半小夜曲', y:1987, cr:'向雪怀 词 · 河合奈保子 曲', phase:'half'},
+ {t:'遥远的夜空，有一个弯弯的月亮。弯弯的月亮下面，是那弯弯的小桥。', a:'刘欢', s:'弯弯的月亮', y:1989, cr:'李海鹰 词曲', phase:'crescent'},
+ {t:'城里的月光把梦照亮，请温暖他心房。看透了人间聚散，能不能多点快乐片段。', a:'许美静', s:'城里的月光', y:1995, cr:'陈佳明 词曲', phase:'full'},
+ {t:'槟榔树梢上的月亮，它很忠实地跟随我，定居到异乡。', a:'彭佳慧·民雄', s:'月亮使者', y:1998, cr:'姚谦 词', phase:'full'},
+ {t:'月亮在你的眼睛，太阳在我心，现在我唱这首歌，OHH 只为你。', a:'顺子', s:'写一首歌 April 5, 1969', y:1998, cr:'顺子、Jeff C 词 · 顺子 曲', phase:'full'},
+ {t:'看，当时的月亮。曾经代表谁的心，结果都一样。', a:'王菲', s:'当时的月亮', y:1999, cr:'林夕 词 · 陈辉阳 曲', phase:'full'},
+ {t:'我醒来，睡在月光里。下弦月，让我想你。', a:'李玟', s:'月光爱人', y:1999, cr:'易家扬 词 · 谭盾 曲', phase:'half-waning'},
+ {t:'我这里半个月亮，你那里是不是也一样。', a:'梁静茹', s:'半个月亮', y:2000, cr:'易齐 词曲', phase:'half'},
+ {t:'那一天落山风吹过海洋，那呜咽声仿佛少年泪光，有多少人 会打开窗，有多少人 痴痴地望，那么蓝的月亮，那遥远的月亮。', a:'老狼', s:'月亮——纪念诗人之二', y:2000, cr:'郁冬 词曲', phase:'full'},
+ {t:'月光如潮水，洗去伤悲，来来回回，淹没黑夜，心不再沉睡。', a:'叶蓓', s:'月光潮水', y:2001, cr:'冯小波 曲', phase:'full'},
+ {t:'都怪那晚的月光，弯弯月亮在天上。', a:'陶喆', s:'月亮代表谁的心', y:2002, cr:'陶喆、娃娃 词 · 陶喆 曲', phase:'crescent'},
+ {t:'阿姆斯壮 登陆月球，是我心的感动，终于你心上 我安全的降落。', a:'五月天', s:'阿姆斯壮', y:2003, cr:'阿信 词曲', phase:'full'},
+ {t:'弯弯月光下，蒲公英在游荡。', a:'王心凌', s:'月光', y:2004, cr:'谈晓珍、陈思宇 词 · 桥本淳 曲', phase:'crescent'},
+ {t:'白月光，心里某个地方。那么亮，却那么冰凉。', a:'张信哲', s:'白月光', y:2004, cr:'李焯雄 词 · 松本俊明 曲', phase:'full'},
+ {t:'我在仰望，月亮之上。有多少梦想在自由地飞翔。', a:'凤凰传奇', s:'月亮之上', y:2005, cr:'何沐阳 词曲', phase:'full'},
+ {t:'漆黑北风中飘渺的烛光中，他想他总能为人们奏出彩虹。音乐自己懂，一样有听众，沿途点亮他命运的灯笼，二泉映月他才不管红与不红。', a:'方大同', s:'南音', y:2005, cr:'林夕 词 · 方大同 曲', phase:'full'},
+ {t:'月桂树飘香 那夜风恋月光。', a:'S.H.E', s:'月桂女神', y:2005, cr:'方文山 词 · 左安安 曲', phase:'full'},
+ {t:'下过雨的，夏天傍晚我都会期待，唱歌的蝉，嘿把星星都吵醒，月光晒了很凉快', a:'孙燕姿', s:'第一天', y:2005, cr:'阿信 词 · 陈建宁、阿信、孙燕姿 曲', phase:'full'},
+ {t:'我住在地球上的海边 这里是黑夜，你在月亮上的花园 那是白天', a:'牛奶咖啡', s:'月亮上的花园', y:2005, phase:'full'},
+ {t:'像诗人依赖着月亮，像海豚依赖海洋，你是天使你是天使，你是我最初和最后的天堂。', a:'五月天', s:'天使', y:2006, cr:'阿信 词 · 怪兽 曲', phase:'full'},
+ {t:'星辰闹成一串，月色笑成一弯。傻傻望了你一晚，怎么看都不觉得烦。', a:'梁静茹', s:'恋着多喜欢', y:2006, cr:'黄俊郎 词 · 小虫 曲', phase:'crescent'},
+ {t:'月光下的城，风里的歌里的岁月声。', a:'老狼', s:'月光倾城', y:2007, cr:'高晓松 词曲', phase:'full'},
+ {t:'一二三，牵着手；四五六，抬起头。七八九，我们私奔到月球。', a:'五月天·陈绮贞', s:'私奔到月球', y:2007, cr:'阿信 词曲', phase:'full'},
+ {t:'夜的宁静，是时候好好反省，月的阴晴圆缺，就像我的心', a:'孙燕姿', s:'安宁', y:2007, cr:'林倛玉 词曲', phase:'full'},
+ {t:'庐州月光，洒在心上。月下的你，不复当年模样。', a:'许嵩', s:'庐州月', y:2009, cr:'许嵩 词曲', phase:'full'},
+ {t:'半夜两点十五分，刚好醒的亻厓推开门。月光像有心事，照着我的唇。', a:'曾雅君', s:'给月亮的歌', y:2009, phase:'full'},
+ {t:'夜晚的月光，轻轻敲着每个轻声的细雨。', a:'周杰伦·杨瑞代', s:'月光', y:2009, cr:'杨瑞代 词曲', phase:'full'},
+ {t:'剪一段时光缓缓流淌，流进了月色中微微荡漾。', a:'凤凰传奇', s:'荷塘月色', y:2010, cr:'张超 词曲', phase:'full'},
+ {t:'月光把爱恋，洒满了湖面。两个人的篝火，照亮整个夜晚。', a:'李健', s:'贝加尔湖畔', y:2011, cr:'李健 词曲', phase:'full'},
+ {t:'我心深似海，你宛如明月。海上升明月，已尽收眼底。', a:'李健', s:'心升明月', y:2011, cr:'李健 词曲', phase:'full'},
+ {t:'当星宿都沉没山岳，只盼你会抬头看我寄托的弯月。', a:'五月天', s:'仓颉', y:2011, cr:'阿信 词 · 石头 曲', phase:'crescent'},
+ {t:'嘿，月亮，想问你，我此时，身在何处？嘿，月亮，又想问你，我的明天，去向哪里？', a:'李夏', s:'月亮', y:2012, cr:'李夏 词曲', phase:'full'},
+ {t:'我说今晚月光那么美，你说是的。', a:'好妹妹乐队', s:'我说今晚月光那么美，你说是的', y:2013, cr:'秦昊 词曲', phase:'full'},
+ {t:'我的世界里有一个你，从春天的花开到秋天的叶落，从夏天的鸟鸣到冬天的雪飘，天上的月儿也望着你的脸，水中的月儿也望着你的脸', a:'程璧', s:'天上的月你的脸', y:2014, phase:'full'},
+ {t:'有月亮的晚上，我们在岸边散步。天是沉静的湛蓝，月光轻而缓的，给夜色罩上一层眷恋。', a:'魏诗莹', s:'游月', y:2015, phase:'full'},
+ {t:'我在他乡，望着月亮。都怪这月色，撩人的风光。', a:'任素汐', s:'我要你', y:2016, cr:'樊冲 词曲', phase:'full'},
+ {t:'真实是妳的手，握住我的虚空。月光保护我们，随着节奏摆动。', a:'卢广仲', s:'月光备忘录', y:2016, phase:'full'},
+ {t:'丰腴的月，心怀不解，世界的背影，陪着我等你', a:'陈粒', s:'睡吧', y:2016, phase:'full'},
+ {t:'一杯敬朝阳，一杯敬月光。唤醒我的向往，温柔了寒窗。', a:'毛不易', s:'消愁', y:2017, cr:'毛不易 词曲', phase:'full'},
+ {t:'以为已经忘了你的那些美，像月光它剪不断。', a:'陈奕迅', s:'谁来剪月光', y:2017, cr:'易家扬 词 · 冯颖琪 曲', phase:'full'},
+ {t:'太阳下山月亮快满了，星星也铺满天', a:'方大同', s:'Catch A Dream', y:2017, cr:'方大同 词曲', phase:'full'},
+ {t:'儿时的景象，都已经不见。只有那月儿，还挂在天边。', a:'斯斯与帆', s:'月亮粑粑咿儿哟', y:2017, cr:'湖南童谣改编', phase:'full'},
+ {t:'天上的月何如水中的月\n水中的月何如梦中的月\n月入千水 水含千月\n那一月是你 那一月是我', a:'胡德夫', s:'月河', y:2017, cr:'周梦蝶 词 · 胡德夫 曲', phase:'full'},
+ {t:'我会披星戴月的想你，我会奋不顾身的前进。', a:'告五人', s:'披星戴月的想你', y:2018, cr:'潘云安 词曲', phase:'full'},
+ {t:'月儿明，风儿轻，你又可曾来过我的梦里。', a:'毛不易', s:'一荤一素', y:2018, cr:'毛不易 词曲', phase:'full'},
+ {t:'秋夜满院星辰，月影朦胧夜凉，守望在门前的老人，他怀想曾少年', a:'夏小桐', s:'少年弦', y:2018, cr:'夏小桐 词曲', phase:'full'},
+ {t:'只有月亮看得到，只有月亮她知道，你的好，我的好，只有月亮听得到，我在小白船上遗忘的民谣，飘呀飘。', a:'岑宁儿', s:'月亮见', y:2018, cr:'岑宁儿 词曲', phase:'full'},
+ {t:'月亮才把故乡，挂天上。', a:'周笔畅', s:'离人的月亮', y:2019, cr:'唐恬 词 · 邓智伟 曲', phase:'full'},
+ {t:'风清月皎，上弦的夜，天空在微笑，还不想睡着，在月光怀抱，再多停留几秒', a:'王诗安', s:'月', y:2019, cr:'崔惟楷 词 · 王诗安 曲', phase:'half'},
+ {t:'是绝望带来了希望，黑暗的另一端，是月亮，是我。', a:'吴青峰', s:'月亮河', y:2020, phase:'full'},
+ {t:'晚安了，你的眼睛，升起月亮，梦入天际', a:'房东的猫·陆宇鹏', s:'月亮鲸鱼', y:2020, cr:'苟璘 词 · 方珲 曲', phase:'full'},
+ {t:'夜和自由深情相望，看那片云吻着月亮，蓝色的梦，Flying with the flow,，掉落在银河烂漫的夜。', a:'袁娅维', s:'月亮忘了（KISMET）', y:2021, cr:'袁娅维、邓杰 词曲', phase:'full'},
+ {t:'潮汐恋上月亮 光年外的残像，仅凭一段月光 将你反复想象。', a:'金玟岐', s:'潮汐恋上月亮', y:2021, phase:'full'},
+ {t:'你好像有什么话想要跟我讲，我倒希望你能够真诚说个谎，但月亮告诉我所有的本质会在此刻揭晓。', a:'沈以诚', s:'月光节', y:2022, phase:'full'},
+ {t:'想問問月亮，有什麼過往，照亮過誰的窗，偷借過誰的光，輾轉過多少張失意的床。', a:'邹念慈', s:'和月亮谈的夜晚', y:2022, phase:'full'},
+ {t:'若是月亮还没来，路灯也可照窗台。照着白色的山茶花微微开。', a:'王宇宙Leto·乔浚丞', s:'若月亮没来', y:2024, cr:'姜洄 词 · 李哲 曲', phase:'new'},
+ {t:'梦里的月儿你圆又圆，思念它浸湿了谁的枕边。', a:'普阿山', s:'江城月梦', y:2024, cr:'王璇 词 · 王璇、普阿山 曲', phase:'full'},
+ {t:'اي نۇرى جايقالدى جەر بەتىنە،月光摇曳在地面上，اينالا نۇرلاندى كۇمكەرىلە،周围开始泛起模糊的光，شومىلىدى اي اينۇرىنا جاسل القاپ،原野沐浴在月光下，كۇزىڭ تويماس اي ساۋلەسى كۇركەمىنە،无法自拔地迷恋月影中，月光下的你，是如此让我着迷', a:'于适', s:'月光', y:2024, phase:'full'},
+ {t:'月光月光亮汪汪。', a:'四川大凉山妞妞合唱团', s:'玉盘', y:2025, cr:'谭淇尹 词曲', phase:'full'},
+ {t:'世界赠予我虫鸣，也赠予我雷霆；赠我弯弯一枚月，也赠予我晚星。', a:'王菲', s:'世界赠予我的', y:2025, cr:'袁晶 词 · 曹正杰 曲', phase:'crescent'},
+ {t:'嗲嗲说月亮是糖油粑粑，掰两半，一半留给归雁，一半寄给流年。', a:'黄雅莉', s:'自然的答案', y:2025, cr:'黄雅莉 词曲', phase:'half'},
+ {t:'Moon Child 怀抱着月亮那个小孩，梦在，阴晴圆缺也不离开。', a:'陶喆', s:'Moonchild', y:2025, phase:'full'},
+ {t:'月亮悄悄翻过小山坡，一座座，月光慢慢悠悠温柔的洒落。', a:'王海颖·孙圳翰', s:'月亮翻过小山坡', y:2025, cr:'星牌 词 · 朱登煜 曲', phase:'full'},
+ {t:'月光变成摆渡人，用银梭补我伤痕', a:'DEN·孙盛希', s:'月光失焦', y:2025, cr:'DEN 词曲', phase:'full'},
+ {t:'月亮出来了，月亮睁开美丽的眼轻轻的对着我瞧，好像对我说，月光是它多情的话语无声无息的说', a:'陈婧霏', s:'墨绿的夜', y:2025, cr:'熊天益 词曲', phase:'full'},
+ {t:'爱是月光，仅两人共享。你一半，我一半。', a:'黄龄', s:'月半', y:2026, cr:'林言祁 词曲', phase:'half'},
+ {t:'我还能看见，多少次满月升起。', a:'房东的猫', s:'我还能看见多少次满月升起', y:2026, phase:'full'},
+ {t:'又一次梦见他，轻轻把月光摘下。要用眼泪多少，来映照这光华。', a:'孟慧圆', s:'月梦', y:2026, phase:'full'},
+ {t:'举头凌月之时，叹为观止，天知地知，何止隔世；余波缓释，终将归于现实。', a:'丁世光', s:'凌月', y:2026, cr:'丁世光 词曲', phase:'full'},
+ {t:'很多画，很多书，以为能偷窥明月背面，月亮不忍心反驳，其实你未看穿。', a:'moon tang', s:'月亮代表我', y:2026, cr:'黄伟文 词 · moon tang 等 曲', phase:'full'},
+];
+const ERA_SUB = {'先秦':'约前11世纪–前221','汉':'前202–220','唐':'618–907','五代':'907–960','宋':'960–1279','清':'1644–1912','现代':'1912–'};
+
+/* 世界版：外文诗歌与歌曲混排，按年代升序 */
+const WORLD = [
+ {orig:'The moon has set, and the Pleiades.', trans:'月亮落下了，还有昴星团。', author:'萨福 Sappho', title:'《月落》', node:'约前600', phase:'new'},
+ {orig:'Cynthia for shame obscures her silver shine', trans:'月亮羞惭地遮掩了她的银辉。', author:'莎士比亚 Shakespeare', title:'《维纳斯与阿多尼斯》', node:'1593', tr:'自译', phase:'waning'},
+ {orig:'The moon being clouded presently is miss\'d, / But little stars may hide them when they list.', trans:'月亮一旦被云遮住，立刻被人觉察；而小星星却可以随意隐没自己。', author:'莎士比亚 Shakespeare', title:'《鲁克丽丝受辱记》', node:'1594', tr:'自译', phase:'waning'},
+ {orig:'The mortal moon hath her eclipse endured, / And the sad augurs mock their own presage.', trans:'人间的月亮已度过被蚀的灾难，不祥的占卜把自己的预言嘲讽。', author:'莎士比亚 Shakespeare', title:'《十四行诗 · 107》', node:'1609', tr:'梁宗岱 译', phase:'waning'},
+ {orig:'名月や池をめぐりて夜もすがら', trans:'明月清辉，绕池徐行，不觉夜尽。', author:'松尾芭蕉', title:'《名月》', node:'1686', phase:'full'},
+ {orig:'Art thou pale for weariness / Of climbing heaven and gazing on the earth,', trans:'你可是疲倦了才这样苍白——攀登上天，凝视着大地。', author:'雪莱 Shelley', title:'《致月亮》', node:'1820', phase:'full'},
+ {orig:'The Moon was but a Chin of Gold / A Night or two ago—', trans:'就在一两夜之前，月亮还只是一弯金色的下颌。', author:'狄金森 Dickinson', title:'《月亮曾是一弯金下颌》', node:'1862', phase:'crescent'},
+ {orig:'Au calme clair de lune triste et beau,', trans:'在宁静而忧伤的、美丽的月光里。', author:'魏尔伦 Verlaine', title:'《月光》', node:'1869', tr:'梁宗岱 译', phase:'full'},
+ {orig:'The moon has a face like the clock in the hall;', trans:'月亮有一张脸，像客厅里的挂钟。', author:'斯蒂文森 Stevenson', title:'《月亮》', node:'1885', phase:'full'},
+ {orig:'Měsíčku na nebi hlubokém, / světlo tvé daleko vidí,', trans:'月亮，深悬于夜空，你的光照得很远。', author:'德沃夏克 曲 · 克瓦皮尔 词', title:'《月亮颂》 ♫', node:'1901', tr:'自译', phase:'full'},
+ {orig:'今 荒城の 夜半の月／替わらぬ光 誰がためぞ', trans:'今宵荒城夜半月，月光依然旧时月。', author:'土井晩翠 词 · 滝廉太郎 曲', title:'《荒城之月》 ♫', node:'1901', tr:'自译', phase:'full'},
+ {orig:'Shine on, shine on harvest moon / Up in the sky,', trans:'照耀吧，照耀吧，高悬天上的丰收之月。', author:'Nora Bayes、Jack Norworth 词曲', title:'《Shine On, Harvest Moon》 ♫', node:'1908', phase:'full'},
+ {orig:'She smooths the hair of the grass. / The moon has lost her memory.', trans:'她抚平青草一样的乱发。月亮已丧失了她的记忆。', author:'T. S. 艾略特 Eliot', title:'《大风夜狂想曲》', node:'1915', tr:'裘小龙 译', phase:'waning'},
+ {orig:'Under the harvest moon, / When the soft silver / Drips shimmering over the garden nights,', trans:'在收获月下，柔银在花园的夜里闪烁滴落。', author:'桑德堡 Sandburg', title:'《在收获月下》', node:'1916', phase:'full'},
+ {orig:'The moon has her light all over the sky, her dark spots to herself.', trans:'月儿把她的光明遍照在天上，却留着她的黑斑给她自己。', author:'泰戈尔 Tagore', title:'《飞鸟集 · 234》', node:'1916', tr:'郑振铎 译', phase:'full'},
+ {orig:'The cat went here and there / And the moon spun round like a top,', trans:'那猫儿到处走动，那月亮像陀螺旋转。', author:'叶芝 Yeats', title:'《猫与月》', node:'1919', tr:'傅浩 译', phase:'crescent'},
+ {orig:'Fosforece la luna sobre las aguas errantes. / La luna hace girar su rodaje de sueño.', trans:'月亮在游荡的水上发出磷光。……月亮转动它梦的圆盘。', author:'聂鲁达 Neruda', title:'《二十首情诗和一首绝望的歌 · 18》', node:'1924', tr:'陈黎、张芬龄 译', phase:'full'},
+ {orig:'La luna vino a la fragua / con su polisón de nardos.', trans:'月亮来到铁匠铺，穿着晚香玉的裙撑。', author:'洛尔迦 Lorca', title:'《月亮的浪漫曲》', node:'1928', tr:'戴望舒 译', phase:'full'},
+ {orig:"I've tried the new moon tilted in the air / Above a hazy tree-and-farmhouse cluster / As you might try a jewel in your hair.", trans:'我把新月斜倚在半空试了试，悬在一片朦胧的树影与农舍之上，像试着把一枚宝石别进你的发间。', author:'弗罗斯特 Frost', title:'《月亮的自由》', node:'1928', tr:'自译', phase:'crescent'},
+ {orig:'Blue moon, you saw me standing alone / Without a dream in my heart.', trans:'蓝月亮啊，你看见我独自伫立，心中没有梦想。', author:'罗杰斯 曲 · 洛伦兹·哈特 词', title:'《Blue Moon》 ♫', node:'1934', phase:'full'},
+ {orig:'Fly me to the moon / Let me play among the stars', trans:'带我飞向月球，让我在群星之间嬉戏。', author:'巴特·霍华德 词曲', title:'《Fly Me to the Moon》 ♫', node:'1954', phase:'full'},
+ {orig:'Moon river, wider than a mile / I\'m crossing you in style some day', trans:'月亮河，宽逾一英里；总有一天，我会优雅地渡过你。', author:'曼西尼 曲 · 默瑟 词 · 奥黛丽·赫本 演唱', title:'《Moon River》 ♫', node:'1961', phase:'full'},
+ {orig:'Mr. Moonlight! / You came to me one summer night, / And from above you sent my love, / And from the world you sent my girl, / And from your beam you made my dream, / And the night you don′t come my way，', trans:'月光先生啊，一个夏夜 你朝我而来，你自天边为我们降下爱情，自世界将我的女孩送到身畔，月辉编织了我的梦幻，那夜你并未来到。', author:'Roy Lee Johnson 词曲 · The Beatles 演唱', title:'《Mr. Moonlight》 ♫', node:'1964', phase:'full'},
+ {orig:'It\'s a marvelous night for a moondance', trans:'今夜曼妙，正宜月下起舞。', author:'Van Morrison 词曲', title:'《Moondance》 ♫', node:'1970', phase:'full'},
+ {orig:'I\'m being followed by a moon shadow / Moon shadow, moon shadow', trans:'有一道月影，一路追随着我。', author:'Cat Stevens 词曲', title:'《Moonshadow》 ♫', node:'1971', phase:'full'},
+ {orig:'Dancing in the moonlight / Everybody\'s feeling warm and bright', trans:'在月光中起舞，每个人都温暖而明亮。', author:'Sherman Kelly 词曲 · King Harvest 演唱', title:'《Dancing in the Moonlight》 ♫', node:'1972', phase:'full'},
+ {orig:'It\'s the judgement of the moon and stars / Your solitary path', trans:'甚至连当你孤独地走在小径上时，头顶的星星和月亮也是这么评价', author:'Joni Mitchell 词曲', title:'《Judgement Of The Moon And Stars》 ♫', node:'1972', phase:'full'},
+ {orig:'When I\'m gone, / No need to wonder if I ever think of you, / The same moon shines, / The same wind blows, / For both of us, and time is but a paper moon...', trans:'当我离开以后，不要怀疑我是否还想着你，月亮还在照耀，风还在吹拂，时间不过是一轮纸月亮。', author:'Brian May 词曲 · Queen 演唱', title:'《Teo Torriatte (Let Us Cling Together)》 ♫', node:'1976', phase:'full'},
+ {orig:'Hay tanta soledad en ese oro. / La luna de las noches no es la luna / que vio el primer Adán.', trans:'那金灿的地方实在凄凉。高悬夜空的月亮，并不是亚当当初见过的情形。', author:'博尔赫斯 Borges', title:'《月亮》', node:'1976', tr:'林之木 译', phase:'full'},
+ {orig:'Here comes the moon / The moon, the moon, the moon', trans:'月亮升起来了。', author:'George Harrison 词曲', title:'《Here Comes the Moon》 ♫', node:'1979', phase:'full'},
+ {orig:'Luna, quieres ser madre / y no encuentras querer que te haga mujer.', trans:'月亮啊，你想做母亲，却找不到一份爱让你成为女人。', author:'J. M. 卡诺 词曲 · Mecano 演唱', title:'《月亮之子》 ♫', node:'1986', tr:'自译', phase:'full'},
+ {orig:'Wiersze apolityczne też są polityczne, / a w górze świeci księżyc, obiekt już nie księżycowy.', trans:'非政治的诗也是政治的，照射我们的月亮不是纯粹的月亮。', author:'辛波斯卡 Szymborska', title:'《时代之子》', node:'1986', tr:'胡桑 译', phase:'full'},
+ {orig:'The nights draw in, / There\'s a silky moon up in the sky - yeah -, / Children are fantasising, / Grown-ups are standin\' by,', trans:'夜色嵌入，绸缎般的月亮悬挂空中，孩童们浮想联翩，长辈们相伴一旁。', author:'Freddie Mercury 词曲 · Queen 演唱', title:'《A Winter\'s Tale》 ♫', node:'1995', phase:'full'},
+ {orig:'In the shadow of the moon, / She danced in the starlight, / Whispering a haunting tune, / To the night...', trans:'在月亮的阴影中，她在星光中轻舞，呢喃着挥之不去的旋律，到了夜晚……。', author:'Ritchie Blackmore 曲 · Candice Night 词', title:'《Shadow Of The Moon》 ♫', node:'1997', phase:'full'},
+ {orig:'Dancing to the feel of the drum, / Leave this world behind, / We\'ll have a drink and toast to ourselves, / Under a violet moon,', trans:'伴随鼓声起舞，置世界于身后，我们将尽情畅饮干杯，在这紫罗兰色的月亮之下。', author:'Ritchie Blackmore 曲 · Candice Night 词', title:'《Under A Violet Moon》 ♫', node:'1999', phase:'full'},
+ {orig:'You can\'t fight the moonlight', trans:'你无法抗拒这月光。', author:'Diane Warren 词曲 · LeAnn Rimes 演唱', title:'《Can\'t Fight the Moonlight》 ♫', node:'2000', phase:'full'},
+ {orig:'Well, goodnight moon', trans:'晚安，月亮。', author:'Shivaree', title:'《Goodnight Moon》 ♫', node:'2000', phase:'full'},
+ {orig:'今晩はお月さん / 山の向こう日が落ちて　夕闇が影を隠す / 街の灯が道に落ちて　影をつくる', trans:'今晚月色真好，太阳渐渐从山上落下 夕阳将影子掩盖其中，街边灯火的照亮 影子又浮现出来', author:'ハンバート ハンバート', title:'《今晩はお月さん》 ♫', node:'2006', phase:'full'},
+ {orig:'Moonglow, lamp low, / All I need is a rainbow, / And true love, / Just like sugar in my coffee,', trans:'月光城，灯火暗，我想要一道彩虹，和一份真挚的爱情，像融化在我咖啡里的糖', author:'Eleni Mandell', title:'《Moonglow, Lamp Low》 ♫', node:'2007', phase:'full'},
+ {orig:'Wish I could fall, / On a night like this, / Into your lovin\' arms, / For a moonlight kiss,', trans:'希望我能沉醉于，这样的夜晚，投入你爱的怀抱，为了那月光之吻。', author:'Bap Kennedy', title:'《Moonlight Kiss》 ♫', node:'2008', phase:'full'},
+ {orig:'There\'s a bad moon on the rise.', trans:'一轮恶月正在升起。', author:'John Fogerty 词曲 · 王若琳 翻唱', title:'《Bad Moon Rising》 ♫', node:'2009', phase:'full'},
+ {orig:'I want to find out where the moon goes, / When it leaves the western sky, / And night dissolves again \'til morning, / Azure turns to gold,', trans:'明月沉沉落西穹，谁知皎皎归何处？晨起夜影渐消融，瑰金染天青。', author:'Norah Jones 词曲', title:'《Moon Song》 ♫', node:'2009', phase:'full'},
+ {orig:'Talking to the moon / Trying to get to you', trans:'我对月亮说话，想让它抵达你。', author:'Bruno Mars 等 词曲', title:'《Talking to the Moon》 ♫', node:'2010', phase:'full'},
+ {orig:'Say, it\'s only a paper moon', trans:'看，那只是一轮纸月亮。', author:'Harold Arlen 曲 · E. Y. Harburg、Billy Rose 词 · Paul McCartney 演唱', title:'《It\'s Only A Paper Moon》 ♫', node:'2012', phase:'full'},
+ {orig:'I remember your bare feet down the hallway / I remember your little laugh / Race cars on the kitchen floor / Plastic dinosaurs, I love you to the moon and back', trans:'我仍记得你光着小脚丫跑过走廊，我记得你浅浅的笑容，坐在厨房的地上玩着赛车，塑料恐龙，我对你的爱宛如往返月球那样的长涟', author:'Taylor Swift 词曲', title:'《Ronan》 ♫', node:'2012', phase:'full'},
+ {orig:'I’m lying on the moon / My dear, I’ll be there soon / It’s a quiet and starry place / Time’s we’re swallowed up / In space we’re here a million miles away', trans:'我躺在月亮上，亲爱的，我马上飞到你身边，这里星光灿烂，安静无比，让时光将我们吞没，漂浮在离地球百万英里的宇宙', author:'Karen O、Spike Jonze 词曲 · Scarlett Johansson 演唱', title:'《The Moon Song (Music From And Inspired By The Motion Picture Her)》 ♫', node:'2014', phase:'full'},
+ {orig:'昨日たしか梦に 猫がでてきたな / 真っ白なリボンを 自慢げにつけてた / 不思议だわ 少しも寂しくない / 夜も月が照らしてくれるから', trans:'昨日的的确确 有猫儿悄然入梦，纯白的缎带 被小猫骄傲的系在身上，真是不可思议啊 竟丝毫不觉寂寞，是因为即使在夜里 月光也会洒在我身上吧', author:'ヘクとパスカル', title:'《猫と月》 ♫', node:'2015', phase:'full'},
+ {orig:'同じ月を見ていた / 流れる水が 街を映す頃 / あの子は眠る いい夢見ながら / 生温い風が 歩道橋を渡る時 / あなたの指は 月に触れるのだろう', trans:'望着同一个月亮，当流水映照出街道光景，沉睡的孩子正做着美梦，当微温的风穿过人行天桥，你的指尖 会触碰月亮吧', author:'奇妙礼太郎', title:'《同じ月を見ている》 ♫', node:'2018', phase:'full'},
+ {orig:'Rises the moon', trans:'月亮升起来了。', author:'liana flores 词曲', title:'《Rises The Moon》 ♫', node:'2019', phase:'full'},
+ {orig:'The moon is high / Like your friends were the night that we first met', trans:'月色高悬，我们初次相遇的那晚 你的朋友们也是如此飘飘然', author:'Taylor Swift、Jack Antonoff 词曲', title:'《Paper Ring》 ♫', node:'2019', phase:'full'},
+ {orig:'When the moon is lookin’ down， / Shinin’ light upon your ground， / I\'m flyin’ up to let you see， / That the shadow cast is me,', trans:'当月亮俯视人间，月光洒落于地，我会飞向天空 让你能够看见，那袭来的阴影正是我。', author:'Imagine Dragon·Elisa', title:'《Birds》 ♫', node:'2019', phase:'full'},
+ {orig:'Crescent moon, coast is clear / Spring breaks loose, but so does fear', trans:'皎洁新月 晴朗海岸，春天的气息萌动 恐惧也是', author:'Taylor Swift、Aaron Dessner 词曲', title:'《ivy》 ♫', node:'2020', phase:'crescent'},
+ {orig:'I loved you to the moon and back again / You gave everything this golden glow', trans:'我对你情深绵延 遥比往返皎月，你也曾将璀璨光辉 回馈予我', author:'Coldplay·Selena Gomez', title:'《Let Somebody Go》 ♫', node:'2021', phase:'full'},
+ {orig:'Baby, I love you to the moon and back / Stars, talkin\' like Mufasa / Know you got some scars but I promise that I got you / Stars, singin\' like Sinatra / Fly me to the moon, there ain\'t nothin\' that could stop you', trans:'宝贝 我对你爱之深远 往返皎月也说不尽，满天繁星 似老狮王木法沙般语重心长 (Mufasa 辛巴之父)我知你满身伤疤 但我保证将永远伴你身旁，满天繁星 如歌手辛纳屈般引吭高歌 (Frank Sinatra 美国歌手)携我飞去月球 势不可当的你啊', author:'JVKE 词曲', title:'《moon and back》 ♫', node:'2022', phase:'full'},
+ {orig:'Well you can meet the moonlight / Any night you really wanna / It\'s waiting in your own backyard', trans:'只要你情愿，你可以在任何夜晚里看见月光，我会耐心等候在你的后院', author:'Jack Johnson 词曲', title:'《Meet The Moonlight》 ♫', node:'2022', phase:'full'},
+ {orig:'何かを求めて月を見ていた', trans:'追寻着什么，久久凝望月亮。', author:'米津玄師 词曲', title:'《月を見ていた》 ♫', node:'2023', phase:'full'},
+ {orig:'Waterfalls over the castle walls imbue / A supermoon / Over honeydew ripples far away', trans:'瀑布飞流 由城堡墙外倾落浸透，一轮超级月亮，遥遥辉映 在那蜜露荡漾的涟漪', author:'Summer Salt', title:'《Supermoon》 ♫', node:'2023', phase:'full'},
+ {orig:'Take a little step inside this long night / Swaying like a tree / Branch in the bright light of this full moon / Talking just to hush', trans:'迈开轻盈的步伐 走进这绵长的黑夜，宛若摇曳于满月下，舒展枝桠的树木，我们轻声细语', author:'Anthony Lazaro·Sarah Kang', title:'《Moon Ride》 ♫', node:'2024', phase:'full'},
+ {orig:'Let\'s dream in the moonlight / / Tell me that you love me / / Tell the stars above me what\'s in your hear', trans:'', author:'Laufey', title:'《Let\'s Dream in the Moonlight (Take 1)》 ♫', node:'2025', phase:'full'},
+];
+
+/* ---------------- 基础工具 ---------------- */
+const MOBILE = innerWidth < 768 || (navigator.hardwareConcurrency||8) < 6;
+const DPR = Math.min(devicePixelRatio||1, 2);
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp  = (a,b,t)=>a+(b-a)*t;
+const smootherstep = t => { t=clamp(t,0,1); return t*t*t*(t*(t*6-15)+10); };
+// mulberry32 确定性随机
+function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+// value noise 2D
+function makeNoise(seed){
+  const r=rng(seed), size=256, grid=new Float32Array(size*size);
+  for(let i=0;i<grid.length;i++) grid[i]=r();
+  const at=(x,y)=>grid[((y&255)*size)+(x&255)];
+  const fade=t=>t*t*(3-2*t);
+  return function(x,y){
+    const xi=Math.floor(x), yi=Math.floor(y), xf=x-xi, yf=y-yi;
+    const u=fade(xf), v=fade(yf);
+    return lerp(lerp(at(xi,yi),at(xi+1,yi),u), lerp(at(xi,yi+1),at(xi+1,yi+1),u), v);
+  };
+}
+function fbm(noise,x,y,oct=4,lac=2,gain=.5){
+  let s=0,a=1,f=1,n=0;
+  for(let i=0;i<oct;i++){ s+=a*noise(x*f,y*f); n+=a; a*=gain; f*=lac; }
+  return s/n;
+}
+/* ---------------- Renderer / Scene / Camera ---------------- */
+const renderer = new THREE.WebGLRenderer({ antialias:!MOBILE, alpha:false, powerPreference:'high-performance' });
+renderer.setPixelRatio(DPR);
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; // 压缩高光，月海低对比不被削顶
+renderer.toneMappingExposure = 1.05;
+renderer.domElement.className='webgl';
+document.body.appendChild(renderer.domElement);
+renderer.domElement.addEventListener('contextmenu',e=>e.preventDefault());
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, .1, 4000);
+
+const FOGS = {
+  cosmos:  { color:new THREE.Color('#07090f'), density:0.0016 },
+  desert:  { color:new THREE.Color('#0b0a08'), density:0.0026 },
+  sea:     { color:new THREE.Color('#070c12'), density:0.0022 },
+  libai:   { color:new THREE.Color('#0a0e13'), density:0.0026 },
+  sushi:   { color:new THREE.Color('#0a0b0c'), density:0.0024 },
+};
+const BGS = {
+  cosmos:new THREE.Color('#05070e'), desert:new THREE.Color('#0a0906'),
+  sea:new THREE.Color('#060a10'), libai:new THREE.Color('#080c11'), sushi:new THREE.Color('#090a0b'),
+};
+scene.fog = new THREE.FogExp2(FOGS.cosmos.color.clone(), FOGS.cosmos.density);
+scene.background = BGS.cosmos.clone();
+
+/* ---------------- 程序化纹理 ---------------- */
+function canvasTexture(w,h,draw){
+  const c=document.createElement('canvas'); c.width=w; c.height=h;
+  draw(c.getContext('2d'),w,h);
+  const t=new THREE.CanvasTexture(c);
+  t.colorSpace=THREE.SRGBColorSpace;
+  return t;
+}
+// 月球基底场：低频月海 + 细腻斑驳（低对比！供 albedo/bump 共用）
+function computeMoonBase(W,H){
+  const n1=makeNoise(20240), n2=makeNoise(9301);
+  const out=new Float32Array(W*H*2); // [alb, bump]
+  const sstep=(a,b,x)=>{ const t=clamp((x-a)/(b-a),0,1); return t*t*(3-2*t); };
+  for(let y=0;y<H;y++){
+    const v=y/H;
+    for(let x=0;x<W;x++){
+      const u=x/W;
+      const wrap=Math.min(1, x/(W*0.06), (W-x)/(W*0.06));
+      let large=fbm(n1,u*3.2+7.3,v*1.7+3.1,4,2.05,.55); // 月海低频场
+      let mid  =fbm(n1,u*11+2.0,v*5.5+8.0,4,2.1,.5);
+      let fine =fbm(n2,u*46,v*23,4,2.05,.55);
+      if(wrap<1){ // 经度接缝混合
+        const u2=u+(u<0.5?1:-1);
+        large=lerp(fbm(n1,u2*3.2+7.3,v*1.7+3.1,4,2.05,.55),large,wrap);
+        mid  =lerp(fbm(n1,u2*11+2.0,v*5.5+8.0,4,2.1,.5),mid,wrap);
+        fine =lerp(fbm(n2,u2*46,v*23,4,2.05,.55),fine,wrap);
+      }
+      const i=(y*W+x)*2;
+      const maria=sstep(0.54,0.78,large);            // 柔和羽化的月海掩码（无硬边）
+      const alb=235 - maria*34 + (mid-0.5)*10 + (fine-0.5)*9;  // 月海差值 ≤~14%
+      const bmp=140 + (mid-0.5)*34 + (fine-0.5)*46 - maria*18; // 月海内部更平滑
+      out[i]=clamp(alb,196,244);
+      out[i+1]=clamp(bmp,60,220);
+    }
+  }
+  return out;
+}
+// 环形山：少而柔，大部分很小，alpha ≤0.12，边缘羽化，严禁生硬圆环
+function drawCraters(ctx,W,H,seed,forBump){
+  const r=rng(seed);
+  const count=15+Math.floor(r()*9); // 15–23 个
+  let raysLeft=3;
+  for(let i=0;i<count;i++){
+    const cx=r()*W, cy=H*0.10+r()*H*0.80;
+    const rad=3+Math.pow(r(),2.4)*24; // 大部分 <10px，极少量 ~20px
+    const a=(0.05+r()*0.065)*(forBump?1.15:1); // ≤0.12
+    const g=ctx.createRadialGradient(cx,cy,0,cx,cy,rad);
+    if(forBump){
+      g.addColorStop(0,`rgba(255,255,255,${(a*0.8).toFixed(3)})`);
+      g.addColorStop(0.5,`rgba(0,0,0,${a.toFixed(3)})`);
+      g.addColorStop(1,'rgba(0,0,0,0)');
+    }else{
+      g.addColorStop(0,`rgba(232,227,214,${(a*0.6).toFixed(3)})`);
+      g.addColorStop(0.45,`rgba(105,101,94,${a.toFixed(3)})`);
+      g.addColorStop(1,'rgba(105,101,94,0)');
+    }
+    ctx.fillStyle=g;
+    ctx.beginPath(); ctx.arc(cx,cy,rad,0,Math.PI*2); ctx.fill();
+    // 2–3 个稍明显的环形山带淡淡放射纹
+    if(rad>13 && raysLeft>0){
+      raysLeft--;
+      const rays=6+Math.floor(r()*4);
+      for(let k=0;k<rays;k++){
+        const ang=r()*Math.PI*2;
+        const len=rad*(2.6+r()*3.2);
+        const lg=ctx.createLinearGradient(cx,cy,cx+Math.cos(ang)*len,cy+Math.sin(ang)*len);
+        lg.addColorStop(0,`rgba(240,236,224,${forBump?0.05:0.035})`);
+        lg.addColorStop(1,'rgba(240,236,224,0)');
+        ctx.strokeStyle=lg;
+        ctx.lineWidth=1.2+r()*2.2;
+        ctx.beginPath();
+        ctx.moveTo(cx+Math.cos(ang)*rad*0.7, cy+Math.sin(ang)*rad*0.7);
+        ctx.lineTo(cx+Math.cos(ang)*len, cy+Math.sin(ang)*len);
+        ctx.stroke();
+      }
+    }
+  }
+}
+function buildMoonTextures(){
+  const W=1024,H=512;
+  const base=computeMoonBase(W,H);
+  const albedo=canvasTexture(W,H,(ctx)=>{
+    const img=ctx.createImageData(W,H), d=img.data;
+    for(let i=0;i<W*H;i++){
+      const b=base[i*2];
+      const warm=clamp((b-198)/44,0,1);  // 越亮越暖：亮部 ≈ #ece7d8，月海偏中性灰
+      d[i*4]=b; d[i*4+1]=b-3-warm*2; d[i*4+2]=b-9-warm*11; d[i*4+3]=255;
+    }
+    ctx.putImageData(img,0,0);
+    drawCraters(ctx,W,H,777,false);
+  });
+  const bumpC=document.createElement('canvas'); bumpC.width=W; bumpC.height=H;
+  const bctx=bumpC.getContext('2d');
+  {
+    const img=bctx.createImageData(W,H), d=img.data;
+    for(let i=0;i<W*H;i++){
+      const b=base[i*2+1];
+      d[i*4]=d[i*4+1]=d[i*4+2]=b; d[i*4+3]=255;
+    }
+    bctx.putImageData(img,0,0);
+  }
+  drawCraters(bctx,W,H,777,true);
+  const bump=new THREE.CanvasTexture(bumpC);
+  albedo.wrapS=THREE.RepeatWrapping; bump.wrapS=THREE.RepeatWrapping;
+  return {albedo,bump};
+}
+// 光晕 sprite
+const glowTex=canvasTexture(256,256,(ctx)=>{
+  const g=ctx.createRadialGradient(128,128,0,128,128,128);
+  g.addColorStop(0,'rgba(246,238,220,0.95)');
+  g.addColorStop(0.22,'rgba(238,226,198,0.42)');
+  g.addColorStop(0.5,'rgba(220,206,175,0.15)');
+  g.addColorStop(1,'rgba(220,206,175,0)');
+  ctx.fillStyle=g; ctx.fillRect(0,0,256,256);
+});
+// 圆点 sprite（烟/雾/碎波）
+const dotTex=canvasTexture(64,64,(ctx)=>{
+  const g=ctx.createRadialGradient(32,32,0,32,32,32);
+  g.addColorStop(0,'rgba(255,255,255,1)');
+   g.addColorStop(0.4,'rgba(255,255,255,0.45)');
+  g.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=g; ctx.fillRect(0,0,64,64);
+});
+/* ---------------- 月球（真实物理光影） ---------------- */
+const moonTex = buildMoonTextures();
+const MOON_R = 7.2;
+const moonGeo = new THREE.SphereGeometry(MOON_R, 96, 96);
+const moonMat = new THREE.MeshStandardMaterial({
+  map: moonTex.albedo, bumpMap: moonTex.bump, bumpScale: 3.0,
+  roughness: 1.0, metalness: 0.0,
+  color: 0xf8f8f2, // 近纯白微暖，绝不偏黄
+  emissive: 0xf2f2ea, emissiveMap: moonTex.albedo, emissiveIntensity: 0.075, // 更亮更柔和，满月莹润
+});
+// 真实月球贴图（NASA SVS CGI Moon Kit，已下载到本地 ./textures/）；
+// 任意一张加载失败则保留程序化纹理兜底
+{
+  const texLoader = new THREE.TextureLoader();
+  const warmify = (img, tint, alpha) => { // canvas 混合少量暖金色
+    const c = document.createElement('canvas');
+    c.width = img.width; c.height = img.height;
+    const x = c.getContext('2d');
+    x.drawImage(img, 0, 0);
+    x.globalCompositeOperation = 'source-atop';
+    x.globalAlpha = alpha;
+    x.fillStyle = tint;
+    x.fillRect(0, 0, c.width, c.height);
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.wrapS = THREE.RepeatWrapping;
+    return t;
+  };
+  texLoader.load('./textures/moon_color.jpg', ct => {
+    const map = warmify(ct.image, '#f0e9d8', 0.016); // ≈1.6% 极微暖化，保持白亮
+    moonMat.map = map;
+    moonMat.emissiveMap = map;
+    moonMat.needsUpdate = true;
+    texLoader.load('./textures/moon_bump.jpg', bt => { // 高程 → bump
+      bt.wrapS = THREE.RepeatWrapping;
+      moonMat.bumpMap = bt;
+      moonMat.bumpScale = 2.4;
+      moonBaseBump = 2.4;
+      moonMat.needsUpdate = true;
+    }, undefined, () => {
+      // 无高程图：从颜色图 luminance 生成 bump
+      const img = ct.image;
+      const c = document.createElement('canvas');
+      c.width = img.width; c.height = img.height;
+      const x = c.getContext('2d');
+      x.drawImage(img, 0, 0);
+      const d = x.getImageData(0, 0, c.width, c.height);
+      for (let i = 0; i < d.data.length; i += 4) {
+        const l = d.data[i]*.299 + d.data[i+1]*.587 + d.data[i+2]*.114;
+        d.data[i] = d.data[i+1] = d.data[i+2] = l;
+      }
+      x.putImageData(d, 0, 0);
+      const bump = new THREE.CanvasTexture(c);
+      bump.wrapS = THREE.RepeatWrapping;
+      moonMat.bumpMap = bump;
+      moonMat.needsUpdate = true;
+    });
+  }, undefined, () => { /* 贴图缺失：程序化纹理兜底，无需处理 */ });
+}
+const moon = new THREE.Mesh(moonGeo, moonMat);
+const moonGroup = new THREE.Group();
+moonGroup.add(moon);
+// 光晕
+const glowMat = new THREE.SpriteMaterial({
+  map: glowTex, transparent:true, blending:THREE.AdditiveBlending,
+  depthWrite:false, opacity:.55, color:0xf6f3ea, // 柔和白月光晕
+});
+const glow = new THREE.Sprite(glowMat);
+glow.scale.set(MOON_R*8.4, MOON_R*8.4, 1);
+moonGroup.add(glow);
+scene.add(moonGroup);
+
+// 月相 = 一盏平行光绕月球转动（θ=0 相机背后 = 满月）
+const sun = new THREE.DirectionalLight(0xfffaf2, 2.5); // 白而柔和的光
+const sunTarget = new THREE.Object3D();
+scene.add(sun, sunTarget);
+sun.target = sunTarget;
+const ambient = new THREE.AmbientLight(0x35322b, .5); // 极淡暖灰地照
+scene.add(ambient);
+// 场景内地面/水面受光用的同方向灯（与 sun 同步方向，低强度）
+const groundSun = new THREE.DirectionalLight(0xe8e2d0, .55);
+scene.add(groundSun, groundSun.target);
+
+const phase = { theta: 0 }; // 度
+function applySun(){
+  const t = phase.theta * Math.PI/180;
+  const elev = Math.sin(t)*0.14;
+  const dir = new THREE.Vector3(Math.sin(t), elev, Math.cos(t)); // 指向光源
+  sun.position.copy(moonGroup.position).addScaledVector(dir, 90);
+  sunTarget.position.copy(moonGroup.position);
+  groundSun.position.copy(moonGroup.position).addScaledVector(dir, 140);
+  groundSun.target.position.copy(moonGroup.position);
+  const lit = (1+Math.cos(t))/2;
+  glowMat.opacity = 0.08 + 0.66*lit;      // 满月柔光清晰可见，随月相衰减（新月几乎熄灭）
+  ambient.intensity = (0.34 + 0.3*lit) * (1 + 2.2*moonFlat);   // 地照：暗面隐约可见；专题平面化时提亮压平
+  groundSun.intensity = 0.45 + 1.0*lit;
+  return lit;
+}
+let litRatio = 1;
+
+// 月相动画（异号强制经过 0，走“满月一侧”的短弧）
+const phaseAnim = { active:false, from:0, mid:null, to:0, start:0, dur:2200 };
+function animatePhaseTo(toTheta){
+  const from = phase.theta;
+  if (from === toTheta) return;
+  phaseAnim.active = true;
+  phaseAnim.from = from; phaseAnim.to = toTheta;
+  phaseAnim.mid = (from * toTheta < 0) ? 0 : null; // 异号 → 经满月
+  phaseAnim.start = performance.now();
+}
+function tickPhase(now){
+  if (!phaseAnim.active) return;
+  const p = smootherstep((now - phaseAnim.start)/phaseAnim.dur);
+  const {from,to,mid} = phaseAnim;
+  if (mid === null) phase.theta = lerp(from,to,p);
+  else if (p < .5) phase.theta = lerp(from,mid,smootherstep(p*2));
+  else phase.theta = lerp(mid,to,smootherstep((p-.5)*2));
+  if (p >= 1){ phase.theta = to; phaseAnim.active=false; }
+}
+
+/* ---------------- 星河 ---------------- */
+const starUniforms = { uTime:{value:0}, uPixelRatio:{value:DPR} };
+function makeStars(count, band){
+  const r = rng(band?4242:1313);
+  const pos = new Float32Array(count*3);
+  const size = new Float32Array(count);
+  const ph = new Float32Array(count);
+  const spd = new Float32Array(count);
+  const col = new Float32Array(count*3);
+  const hero = new Float32Array(count); // 1–2% 明亮主星
+  // 银河带参数：倾斜平面
+  const axisA = new THREE.Vector3(1, .18, .12).normalize();
+  const axisB = new THREE.Vector3(-.15, .9, .25).normalize();
+  const nz = makeNoise(555);
+  for(let i=0;i<count;i++){
+    let x,y,z;
+    if(band){
+      const t=(r()*2-1)*900, s=(r()*2-1);
+      const spread = (Math.abs(s)<1? Math.sign(s)*Math.pow(Math.abs(s),1.7):s)*90;
+      x = axisA.x*t + axisB.x*spread + (nz(i%97,(i*7)%89)-.5)*40;
+      y = axisA.y*t + axisB.y*spread + (nz((i*3)%83,(i*11)%61)-.5)*30 + 40;
+      z = axisA.z*t + axisB.z*spread + (nz((i*13)%79,(i*5)%71)-.5)*40;
+    }else{
+      const rad = 220 + r()*760;
+      const th = r()*Math.PI*2;
+      const phi = Math.acos(2*r()-1);
+      x = rad*Math.sin(phi)*Math.cos(th);
+      y = rad*Math.cos(phi)*.8 + 40;
+      z = rad*Math.sin(phi)*Math.sin(th);
+    }
+    pos[i*3]=x; pos[i*3+1]=y; pos[i*3+2]=z;
+    const isHero = !band && r()<0.016;
+    hero[i] = isHero?1:0;
+    size[i] = isHero? 2.6+r()*0.9 : (band? .55+r()*1.1 : .5+r()*2.2);
+    ph[i] = r()*Math.PI*2;
+    spd[i] = (Math.PI*2)/(2.4+r()*5.2);
+    const c = r();
+    let cr,cg,cb;
+    if(c<.55){ cr=1.0; cg=.99; cb=.95; }        // 暖白
+    else if(c<.85){ cr=.88; cg=.92; cb=1.0; }   // 冷白
+    else{ cr=1.0; cg=.94; cb=.78; }             // 微金
+    let dim = band? .7+r()*.5 : .8+r()*.35;
+    if(isHero) dim*=1.5;
+    col[i*3]=cr*dim; col[i*3+1]=cg*dim; col[i*3+2]=cb*dim;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  g.setAttribute('aSize', new THREE.BufferAttribute(size,1));
+  g.setAttribute('aPhase', new THREE.BufferAttribute(ph,1));
+  g.setAttribute('aSpeed', new THREE.BufferAttribute(spd,1));
+  g.setAttribute('aColor', new THREE.BufferAttribute(col,3));
+  g.setAttribute('aHero', new THREE.BufferAttribute(hero,1));
+  const m = new THREE.ShaderMaterial({
+    uniforms: starUniforms,
+    transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+    vertexShader:`
+      attribute float aSize, aPhase, aSpeed, aHero;
+      attribute vec3 aColor;
+      uniform float uTime, uPixelRatio;
+      varying float vA; varying vec3 vC;
+      void main(){
+        float tw = sin(aPhase + uTime*aSpeed*(1.0+aHero*.9));
+        float amp = mix(0.90, 1.0, aHero);
+        vA = (0.05 + amp*smoothstep(-1.0,1.0,tw)) * (1.0 + aHero*.9);
+        vC = aColor;
+        vec4 mv = modelViewMatrix * vec4(position,1.0);
+        float ps = aSize * (1.0 + (0.28+0.25*aHero)*sin(aPhase*1.7 + uTime*aSpeed*.7));
+        gl_PointSize = ps * uPixelRatio * (260.0 / -mv.z);
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader:`
+      varying float vA; varying vec3 vC;
+      void main(){
+        float d = length(gl_PointCoord - .5);
+        float a = smoothstep(.5, .06, d) * vA;
+        gl_FragColor = vec4(vC, a);
+      }`,
+  });
+  const pts = new THREE.Points(g,m);
+  pts.frustumCulled = false;
+  return pts;
+}
+const starGroup = new THREE.Group();
+const starsFar = makeStars(MOBILE?4800:10500, false);
+const starsBand = makeStars(MOBILE?3000:6200, true);
+starGroup.add(starsFar, starsBand);
+// 深邃蓝黑渐变天穹（替代纯黑背景）+ 地平线星云微光
+{
+  const skyDome = new THREE.Mesh(
+    new THREE.SphereGeometry(1800, 32, 24),
+    new THREE.ShaderMaterial({
+      side: THREE.BackSide, depthWrite:false, fog:false,
+      vertexShader:`
+        varying vec3 vDir;
+        void main(){
+          vDir = position;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+        }`,
+      fragmentShader:`
+        varying vec3 vDir;
+        float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+        float vnoise(vec2 p){
+          vec2 i=floor(p), f=fract(p);
+          f=f*f*(3.-2.*f);
+          return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),
+                     mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.,1.)),f.x),f.y);
+        }
+        void main(){
+          vec3 d=normalize(vDir);
+          float h=d.y;
+          vec3 top=vec3(0.010,0.014,0.030);      // 天顶：深邃蓝黑
+          vec3 hor=vec3(0.042,0.060,0.098);      // 地平线：深蓝微亮
+          vec3 col=mix(hor, top, smoothstep(-0.25,0.6,h));
+          // 地平线附近极淡的星云微光（蓝 + 微粉）
+          float n=vnoise(d.xz*2.6+7.0)*0.6 + vnoise(d.xz*5.4)*0.4;
+          float belt=1.0-smoothstep(0.0,0.42,abs(h+0.06));
+          col += vec3(0.020,0.028,0.052)*n*belt;
+          col += vec3(0.030,0.020,0.034)*pow(n,2.0)*belt*0.5;
+          gl_FragColor=vec4(col,1.0);
+        }`,
+    })
+  );
+  skyDome.frustumCulled=false;
+  starGroup.add(skyDome);
+}
+// 银河雾带 sprite：多条低透明度蓝白/微粉雾带，倾斜横贯天幕，极慢漂移
+const milkySprites=[];
+{
+  const fogTexB = canvasTexture(512,128,(ctx)=>{
+    const g=ctx.createLinearGradient(0,0,0,128);
+    g.addColorStop(0,'rgba(255,255,255,0)');
+    g.addColorStop(.5,'rgba(255,255,255,0.26)');
+    g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=g; ctx.fillRect(0,0,512,128);
+    // 横向两端淡出
+    ctx.globalCompositeOperation='destination-in';
+    const gx=ctx.createLinearGradient(0,0,512,0);
+    gx.addColorStop(0,'rgba(0,0,0,0)');
+    gx.addColorStop(.25,'rgba(0,0,0,1)');
+    gx.addColorStop(.75,'rgba(0,0,0,1)');
+    gx.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=gx; ctx.fillRect(0,0,512,128);
+    // 斑驳暗纹，避免均匀塑料感
+    ctx.globalCompositeOperation='destination-out';
+    const n=makeNoise(88);
+    for(let i=0;i<340;i++){
+      const x=Math.random()*512,y=Math.random()*128,rad=6+Math.random()*30;
+      const gg=ctx.createRadialGradient(x,y,0,x,y,rad);
+      gg.addColorStop(0,`rgba(0,0,0,${.16*n(x,y)+.04})`);
+      gg.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=gg; ctx.beginPath(); ctx.arc(x,y,rad,0,7); ctx.fill();
+    }
+  });
+  const mats=[
+    new THREE.SpriteMaterial({map:fogTexB, color:0xbecdeb, transparent:true, opacity:.5, blending:THREE.AdditiveBlending, depthWrite:false, fog:false, rotation:.22}),
+    new THREE.SpriteMaterial({map:fogTexB, color:0xe6ccd8, transparent:true, opacity:.32, blending:THREE.AdditiveBlending, depthWrite:false, fog:false, rotation:.22}),
+  ];
+  const rr=rng(6161);
+  for(let i=0;i<8;i++){
+    const sp = new THREE.Sprite(mats[i%2]);
+    const x=-860+i*245+(rr()-.5)*70;
+    sp.scale.set(620+rr()*140, 150+rr()*50, 1);
+    sp.position.set(x, 30 + x*0.21 + (rr()-.5)*36, -460-rr()*50);
+    sp.userData={x0:sp.position.x, y0:sp.position.y, ph:rr()*10};
+    starGroup.add(sp);
+    milkySprites.push(sp);
+  }
+  // 远处地平线附近的极淡星云微光（补亮屏幕下方）
+  for(let i=0;i<3;i++){
+    const tint=[0x9fb4d8,0xc4a8c0,0x8ea8cc][i];
+    const nm=new THREE.SpriteMaterial({map:dotTex, color:tint, transparent:true, opacity:.10, blending:THREE.AdditiveBlending, depthWrite:false, fog:false});
+    const sp=new THREE.Sprite(nm);
+    sp.scale.set(620,120,1);
+    sp.position.set(-380+i*380, -70-rr()*40, -700-rr()*60);
+    sp.userData={x0:sp.position.x, y0:sp.position.y, ph:rr()*10};
+    starGroup.add(sp);
+    milkySprites.push(sp);
+  }
+}
+scene.add(starGroup);
+/* ---------------- 流星 ---------------- */
+const meteors = [];
+{
+  const r=rng(999);
+  for(let i=0;i<3;i++){
+    const g=new THREE.BufferGeometry();
+    const pts=new Float32Array(2*3);
+    g.setAttribute('position', new THREE.BufferAttribute(pts,3));
+    const m=new THREE.LineBasicMaterial({color:0xf4eede, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false});
+    const line=new THREE.Line(g,m);
+    line.visible=false; line.frustumCulled=false;
+    scene.add(line);
+    meteors.push({line, t:0, dur:0, active:false, from:new THREE.Vector3(), to:new THREE.Vector3(), next: 3 + i*4 + r()*4, r});
+  }
+}
+function tickMeteors(dt, now){
+  for(const mt of meteors){
+    if(!mt.active){
+      mt.next -= dt;
+      if(mt.next<=0){
+        mt.active=true; mt.t=0; mt.dur=1.1+mt.r()*0.9;
+        const camZ = cam.z;
+        mt.from.set(cam.x-140+mt.r()*280, 120+mt.r()*160, camZ-160-mt.r()*240);
+        mt.to.copy(mt.from).add(new THREE.Vector3(60+mt.r()*90, -46-mt.r()*50, -30));
+        mt.line.visible=true;
+      }
+    }else{
+      mt.t+=dt;
+      const p=mt.t/mt.dur;
+      if(p>=1){ mt.active=false; mt.line.visible=false; mt.next=6+mt.r()*6; continue; }
+      const head=new THREE.Vector3().lerpVectors(mt.from,mt.to,smootherstep(Math.min(1,p*1.15)));
+      const tail=new THREE.Vector3().lerpVectors(mt.from,mt.to,Math.max(0,p-0.16));
+      const pos=mt.line.geometry.attributes.position;
+      pos.setXYZ(0,head.x,head.y,head.z); pos.setXYZ(1,tail.x,tail.y,tail.z);
+      pos.needsUpdate=true;
+      mt.line.material.opacity = Math.sin(Math.PI*p)*.8;
+    }
+  }
+}
+
+/* ---------------- 场景容器 ---------------- */
+const sceneGroups = { cosmos:starGroup };
+function buildSceneGroup(name, builder){
+  const g=new THREE.Group();
+  g.visible=false;
+  scene.add(g);
+  builder(g);
+  sceneGroups[name]=g;
+  return g;
+}
+// 山脊几何：噪声起伏的厚板（前后两面， silhouette 用）
+function ridgeMesh(seed, width, height, y0, z, color){
+  const n=makeNoise(seed);
+  const seg=180;
+  const shape=new THREE.Shape();
+  shape.moveTo(-width/2, y0-80);
+  for(let i=0;i<=seg;i++){
+    const x=-width/2 + width*i/seg;
+    const h = fbm(n, i*0.025, 0, 4, 2, .55);
+    shape.lineTo(x, y0 + h*height);
+  }
+  shape.lineTo(width/2, y0-80);
+  const geo=new THREE.ShapeGeometry(shape);
+  const mat=new THREE.MeshBasicMaterial({color, fog:true});
+  const m=new THREE.Mesh(geo,mat);
+  m.position.z=z;
+  return m;
+}
+
+/* ----- 1. 边关的月亮 · 大漠孤烟 ----- */
+let smokePts=null, smokeData=null;
+buildSceneGroup('desert', (g)=>{
+  const n=makeNoise(31415);
+  const geo=new THREE.PlaneGeometry(1400, 900, 150, 100);
+  geo.rotateX(-Math.PI/2);
+  const pos=geo.attributes.position;
+  for(let i=0;i<pos.count;i++){
+    const x=pos.getX(i), z=pos.getZ(i);
+    const d=fbm(n, x*0.006+3, z*0.006, 4, 2.1, .5);
+    const ripple=Math.sin(x*0.05 + d*8)*2.0;
+    const far=clamp((-z-40)/500,0,1);
+    pos.setY(i, d*34*(0.3+far) + ripple*(1-far) - 6);
+  }
+  geo.computeVertexNormals();
+  const mat=new THREE.MeshStandardMaterial({color:0x5a4e3a, roughness:1, metalness:0});
+  const sand=new THREE.Mesh(geo,mat);
+  sand.position.z=-260;
+  g.add(sand);
+  // 月光补光：从月轮方向洒向沙海（主题场景内局部灯）
+  const moonlight=new THREE.DirectionalLight(0xe6dfc8, 1.15);
+  moonlight.position.set(90, 220, 140);
+  moonlight.target.position.set(0, 0, -300);
+  g.add(moonlight, moonlight.target);
+  // 远山剪影
+  g.add(ridgeMesh(601, 1600, 55, -14, -520, 0x27324a));
+  g.add(ridgeMesh(602, 1600, 38, -16, -430, 0x1a2233));
+  // 地平线微光
+  const glowM=new THREE.Mesh(
+    new THREE.PlaneGeometry(1400,34),
+    new THREE.MeshBasicMaterial({color:0x8a6a40, transparent:true, opacity:.30, fog:false, blending:THREE.AdditiveBlending, depthWrite:false})
+  );
+  glowM.position.set(0,-2,-540);
+  g.add(glowM);
+  // 孤烟：上升粒子柱
+  const N=MOBILE?48:80;
+  smokeData=new Float32Array(N*4); // x0,z0,speed,phase
+  const pgeo=new THREE.BufferGeometry();
+  const parr=new Float32Array(N*3);
+  const r=rng(4321);
+  for(let i=0;i<N;i++){
+    smokeData[i*4]= (r()-.5)*2.4;
+    smokeData[i*4+1]= -230 + (r()-.5)*2;
+    smokeData[i*4+2]= 2.2+r()*2.4;
+    smokeData[i*4+3]= r()*100;
+  }
+  pgeo.setAttribute('position', new THREE.BufferAttribute(parr,3));
+  const pmat=new THREE.PointsMaterial({
+    map:dotTex, size:7, transparent:true, opacity:.3,
+    color:0xd0c9b8, blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
+  });
+  smokePts=new THREE.Points(pgeo,pmat);
+  smokePts.frustumCulled=false;
+  g.add(smokePts);
+});
+function tickDesert(t){
+  if(!smokePts||!sceneGroups.desert.visible) return;
+  const pos=smokePts.geometry.attributes.position;
+  for(let i=0;i<smokeData.length/4;i++){
+    const x0=smokeData[i*4], z0=smokeData[i*4+1], sp=smokeData[i*4+2], ph=smokeData[i*4+3];
+    const y=((t*sp+ph)%70);
+    const sway=Math.sin(t*.6+ph)*1.4 + y*0.12*Math.sin(t*.3+ph*.7);
+    pos.setXYZ(i, x0+sway, y-4, z0);
+  }
+  pos.needsUpdate=true;
+  smokePts.material.opacity=.28;
+}
+/* ----- 2. 中秋的月亮 · 海上生明月 ----- */
+const seaUniforms={
+  uTime:{value:0},
+  uMoonX:{value:0},
+  uLit:{value:1},
+  uFogColor:{value:new THREE.Color('#070c12')},
+  uFogDensity:{value:0.0022},
+};
+buildSceneGroup('sea', (g)=>{
+  const geo=new THREE.PlaneGeometry(1600,1000,1,1);
+  geo.rotateX(-Math.PI/2);
+  const mat=new THREE.ShaderMaterial({
+    uniforms:seaUniforms,
+    fog:false,
+    vertexShader:`
+      varying vec3 vW;
+      void main(){
+        vec4 w = modelMatrix * vec4(position,1.0);
+        vW = w.xyz;
+        gl_Position = projectionMatrix * viewMatrix * w;
+      }`,
+    fragmentShader:`
+      uniform float uTime, uMoonX, uLit, uFogDensity;
+      uniform vec3 uFogColor;
+      varying vec3 vW;
+      float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+      float noise(vec2 p){
+        vec2 i=floor(p), f=fract(p);
+        f=f*f*(3.-2.*f);
+        return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),
+                   mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);
+      }
+      void main(){
+        vec2 p = vW.xz;
+        float d = length(vW - cameraPosition);
+        // 波纹法线扰动
+        float w1 = sin(p.x*.14 + uTime*.8) + sin(p.y*.11 - uTime*.6);
+        float w2 = noise(p*.06 + uTime*.05)*4.;
+        // 深水基色
+        vec3 base = vec3(.016,.028,.040) + vec3(.010,.016,.022)*noise(p*.02+uTime*.03);
+        // 月光倒影光路：月亮屏幕竖线下方的粼粼光柱
+        float dx = abs(p.x - uMoonX);
+        float path = exp(-dx*dx/240.0) * (1.0 - smoothstep(-420., 60., p.y));
+        float sparkle = noise(vec2(p.x*1.4, p.y*.5 - uTime*1.2)) * noise(vec2(p.x*.7+9., p.y*.9 + uTime*.8));
+        sparkle = pow(sparkle, 2.6)*3.2;
+        float glint = smoothstep(.75,1.,noise(p*vec2(1.2,.5)+vec2(0.,-uTime*1.5)));
+        vec3 moonCol = vec3(.93,.89,.78);
+        vec3 col = base + moonCol * path * (0.30 + sparkle*.55 + glint*.6) * (0.25+0.75*uLit);
+        // 普通波光
+        col += vec3(.5,.55,.6) * max(0., w1+w2-2.6)*.02;
+        // 地平线雾亮
+        col = mix(col, uFogColor, smoothstep(200., 900., d));
+        gl_FragColor = vec4(col, 1.0);
+      }`,
+  });
+  const sea=new THREE.Mesh(geo,mat);
+  sea.position.set(0,-8,-260);
+  g.add(sea);
+  // 地平线雾线
+  const hz=new THREE.Mesh(
+    new THREE.PlaneGeometry(1600,20),
+    new THREE.MeshBasicMaterial({color:0x9fb2c4, transparent:true, opacity:.10, blending:THREE.AdditiveBlending, depthWrite:false, fog:false})
+  );
+  hz.position.set(0,-5,-560);
+  g.add(hz);
+});
+
+/* ----- 3. 李白的月亮 · 峨眉山月 ----- */
+const riverUniforms={
+  uTime:{value:0}, uMoonX:{value:0}, uLit:{value:1},
+  uFogColor:{value:new THREE.Color('#0a0e13')},
+};
+buildSceneGroup('libai', (g)=>{
+  // 层叠远山：近深远淡
+  g.add(ridgeMesh(701, 1700, 90, -10, -560, 0x445671));
+  g.add(ridgeMesh(702, 1700, 70, -14, -470, 0x313f56));
+  g.add(ridgeMesh(703, 1700, 52, -16, -390, 0x222d41));
+  g.add(ridgeMesh(704, 1700, 34, -18, -320, 0x161d2b));
+  // 山下一弯江水（窄水面，简化倒影）
+  const geo=new THREE.PlaneGeometry(1600,220);
+  geo.rotateX(-Math.PI/2);
+  const mat=new THREE.ShaderMaterial({
+    uniforms:riverUniforms,
+    vertexShader:`
+      varying vec3 vW;
+      void main(){
+        vec4 w=modelMatrix*vec4(position,1.0);
+        vW=w.xyz;
+        gl_Position=projectionMatrix*viewMatrix*w;
+      }`,
+    fragmentShader:`
+      uniform float uTime,uMoonX,uLit;
+      uniform vec3 uFogColor;
+      varying vec3 vW;
+      float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+      float noise(vec2 p){
+        vec2 i=floor(p), f=fract(p);
+        f=f*f*(3.-2.*f);
+        return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);
+      }
+      void main(){
+        vec2 p=vW.xz;
+        vec3 base=vec3(.014,.022,.030);
+        float dx=abs(p.x-uMoonX);
+        float path=exp(-dx*dx/160.0);
+        float sp=pow(noise(vec2(p.x*2.2,p.y*1.1-uTime*.9))*noise(vec2(p.x*1.1+7.,p.y*2.+uTime*.6)),2.4)*3.;
+        vec3 col=base + vec3(.92,.88,.77)*path*(.10+sp*.22)*(.25+.75*uLit);
+        float d=length(vW-cameraPosition);
+        col=mix(col,uFogColor,smoothstep(120.,700.,d));
+        gl_FragColor=vec4(col,1.);
+      }`,
+  });
+  const river=new THREE.Mesh(geo,mat);
+  river.position.set(0,-12,-170);
+  g.add(river);
+});
+/* ----- 4. 苏轼的月亮 · 承天寺竹柏 ----- */
+let bambooMat=null;
+buildSceneGroup('sushi', (g)=>{
+  // 地面
+  const ground=new THREE.Mesh(
+    new THREE.PlaneGeometry(900,700),
+    new THREE.MeshStandardMaterial({color:0x14161a, roughness:.9, metalness:.05})
+  );
+  ground.rotation.x=-Math.PI/2;
+  ground.position.set(0,-9,-200);
+  g.add(ground);
+  // 「庭下如积水空明」：极淡月光水面反光
+  const pool=new THREE.Mesh(
+    new THREE.PlaneGeometry(120,60),
+    new THREE.MeshBasicMaterial({map:glowTex, color:0x8f9aa8, transparent:true, opacity:.16, blending:THREE.AdditiveBlending, depthWrite:false})
+  );
+  pool.rotation.x=-Math.PI/2;
+  pool.position.set(6,-8.6,-60);
+  g.add(pool);
+  // 竹子剪影：instanced 细长 plane + 叶簇，顶点摇曳
+  const r=rng(2727);
+  const stalkGeo=new THREE.PlaneGeometry(1.1,26,1,6);
+  stalkGeo.translate(0,13,0);
+  bambooMat=new THREE.MeshBasicMaterial({color:0x05070a, side:THREE.DoubleSide});
+  bambooMat.onBeforeCompile=(sh)=>{
+    sh.uniforms.uTime={value:0};
+    bambooMat.userData.sh=sh;
+    sh.vertexShader='uniform float uTime;\n'+sh.vertexShader.replace(
+      '#include <begin_vertex>',
+      `#include <begin_vertex>
+       float swayA = sin(uTime*.7 + float(gl_InstanceID)*1.7) * .35;
+       transformed.x += swayA * (position.y/26.0) * (position.y/26.0);`
+    );
+  };
+  const stalks=new THREE.InstancedMesh(stalkGeo,bambooMat,16);
+  const dummy=new THREE.Object3D();
+  const clusterX=[-46,-40,-34, 30,36,43,  -18, 14];
+  let idx=0;
+  for(const cx of clusterX){
+    for(let k=0;k<2 && idx<16;k++){
+      dummy.position.set(cx+(r()-.5)*6, -9, -55-(r()*40));
+      dummy.rotation.y=(r()-.5)*.4;
+      dummy.rotation.z=(r()-.5)*.06;
+      const s=.85+r()*.5;
+      dummy.scale.set(s,s,s);
+      dummy.updateMatrix();
+      stalks.setMatrixAt(idx++,dummy.matrix);
+    }
+  }
+  g.add(stalks);
+  // 叶簇：几个小平面组
+  const leafGeo=new THREE.PlaneGeometry(7,3.2);
+  const leafMat=new THREE.MeshBasicMaterial({color:0x04060a, side:THREE.DoubleSide, transparent:true, opacity:.92});
+  const leaves=new THREE.InstancedMesh(leafGeo,leafMat,clusterX.length*3);
+  idx=0;
+  for(const cx of clusterX){
+    for(let k=0;k<3;k++){
+      dummy.position.set(cx+(r()-.5)*9, 8+r()*12, -58-r()*36);
+      dummy.rotation.set((r()-.5)*.5,(r()-.5)*1.2,(r()-.5)*.8);
+      dummy.scale.setScalar(.7+r()*.8);
+      dummy.updateMatrix();
+      leaves.setMatrixAt(idx++,dummy.matrix);
+    }
+  }
+  g.add(leaves);
+  // 地面雾气漂移
+  const mistMat=new THREE.SpriteMaterial({map:dotTex, color:0x9aa4b2, transparent:true, opacity:.05, depthWrite:false});
+  const mists=[];
+  for(let i=0;i<10;i++){
+    const sp=new THREE.Sprite(mistMat);
+    sp.scale.set(70+r()*60, 14+r()*8, 1);
+    sp.position.set((r()-.5)*180, -6+r()*3, -30-r()*120);
+    sp.userData.ph=r()*10;
+    mists.push(sp); g.add(sp);
+  }
+  g.userData.mists=mists;
+  g.userData.pool=pool;
+});
+function tickSushi(t){
+  const g=sceneGroups.sushi;
+  if(!g||!g.visible) return;
+  if(bambooMat&&bambooMat.userData.sh) bambooMat.userData.sh.uniforms.uTime.value=t;
+  for(const m of g.userData.mists){
+    m.position.x += Math.sin(t*.08+m.userData.ph)*.02;
+    m.material.opacity=.04+.018*Math.sin(t*.2+m.userData.ph);
+  }
+}
+
+/* ---------------- 场景切换 ---------------- */
+const SCENE_CFG = {
+  cosmos:{fog:'cosmos', bg:'cosmos', moonY:.30, moonSize:.21, moonX:.30, moonFlat:false},
+  desert:{fog:'desert', bg:'desert', moonY:.24, moonSize:.115, moonX:.24, moonFlat:true},
+  sea:{fog:'sea', bg:'sea', moonY:.22, moonSize:.125, moonX:.24, moonFlat:true},
+  libai:{fog:'libai', bg:'libai', moonY:.26, moonSize:.115, moonX:.24, moonFlat:true},
+  sushi:{fog:'sushi', bg:'sushi', moonY:.26, moonSize:.115, moonX:.24, moonFlat:true},
+};
+let activeScene='cosmos';
+const fogLerp={active:false,t:0,fromC:new THREE.Color(),toC:new THREE.Color(),fromD:0,toD:0,fromB:new THREE.Color(),toB:new THREE.Color()};
+function switchScene(name){
+  if(name===activeScene) return;
+  for(const k in sceneGroups) sceneGroups[k].visible = (k===name);
+  activeScene=name;
+  const cfg=SCENE_CFG[name], f=FOGS[cfg.fog];
+  fogLerp.active=true; fogLerp.t=0;
+  fogLerp.fromC.copy(scene.fog.color); fogLerp.toC.copy(f.color);
+  fogLerp.fromD=scene.fog.density; fogLerp.toD=f.density;
+  fogLerp.fromB.copy(scene.background); fogLerp.toB.copy(BGS[cfg.bg]);
+}
+function tickFog(dt){
+  if(!fogLerp.active) return;
+  fogLerp.t=Math.min(1,fogLerp.t+dt/1.5);
+  const e=smootherstep(fogLerp.t);
+  scene.fog.color.lerpColors(fogLerp.fromC,fogLerp.toC,e);
+  scene.fog.density=lerp(fogLerp.fromD,fogLerp.toD,e);
+  scene.background.lerpColors(fogLerp.fromB,fogLerp.toB,e);
+  if(fogLerp.t>=1) fogLerp.active=false;
+}
+/* ---------------- 时间流（DOM 条目 + 3D 锚点） ---------------- */
+const entriesEl = document.getElementById('entries');
+const spotEl = document.getElementById('spot');
+const hintEl = document.getElementById('hint');
+if(matchMedia('(pointer:coarse)').matches) hintEl.textContent='抚过月面 · 变幻月相，轻点月亮 · 进入时间长河';
+const veilEl = document.getElementById('veil');
+const chipsEl = document.getElementById('chips');
+const modeEl = document.getElementById('modeSwitch');
+
+const state = {
+  mode:'poem', theme:'全部',
+  items:[], entries:[], eras:[],
+  camZ:0, camTargetZ:0, maxZ:0, minZ:0,
+  selected:-1, locked:false, landed:false,
+  moonFracY:.30,
+};
+const THEME_SCENE = {'全部':'cosmos','李白的月亮':'libai','苏轼的月亮':'sushi','中秋的月亮':'sea','边关的月亮':'desert'};
+const SPACING = 70; // ×1.4 拉开相邻条目 z 间距，避免中段投影相撞
+function flowSpacing(){ return (state.mode==='world'||state.mode==='river') ? 86 : SPACING; } // 世界篇/长河文字更宽，时间轴间距再拉开
+const AMP_SCALE = clamp(innerWidth/1280, .5, 1); // 窄屏等比收窄横向振幅，保证移动端条目不出屏
+const FIRST_VIEW_D = 80; // 第一条目初始视距：投影落在视口内、opacity 处于高亮区
+// 初始/切换后的相机起点：让第一条目距离相机 d≈80；竖屏投影更靠外时自动加大视距收回视口
+function initialCamZ(){
+  const p0 = anchorPos(0);
+  const tanH = Math.tan(camera.fov*Math.PI/360);
+  let d = FIRST_VIEW_D;
+  const halfW = tanH*d*camera.aspect;
+  if (Math.abs(p0.x) > halfW*0.5) d = Math.abs(p0.x)/(0.5*tanH*camera.aspect);
+  return p0.z - d;
+}
+
+function worldYear(n){ const m=/前\s*(\d+)/.exec(n); if(m) return -parseInt(m[1],10); const v=parseInt(n,10); return isNaN(v)?9999:v; }
+function isSongIt(it){ return it.orig===undefined && it.y!==undefined; }
+/* 条目署名：中文＝作者/演唱 · 《作品》（歌曲附词曲）；世界＝作者 · 《作品》（附译者） */
+function whoOf(it){
+  if(it.orig!==undefined) return [it.author, it.title, it.tr].filter(Boolean).join(' · ');
+  return `${it.a} · 《${it.s}》${isSongIt(it)?' ♫':''}${it.cr?' · '+it.cr:''}`;
+}
+function flowItems(){
+  if(state.mode==='song') return SONGS.slice();
+  if(state.mode==='world') return WORLD.slice();
+  if(state.mode==='river'){ // 时间长河：三者合并，按系年顺流而下
+    const a=POEMS.map(p=>({...p, yk:POEM_Y[p.a+'|'+p.s]??9999}));
+    const b=SONGS.map(s=>({...s, yk:s.y}));
+    const c=WORLD.map(w=>({...w, yk:worldYear(w.node)}));
+    return a.concat(b,c).sort((x,y)=>x.yk-y.yk);
+  }
+  if(state.theme==='全部') return POEMS.slice();
+  return POEMS.filter(p=>p.themes.includes(state.theme));
+}
+function anchorPos(i){
+  const r=rng(5000+i*37);
+  const side = i%2===0? -1: 1;
+  // 奇数条目略上浮、偶数略下沉（中距离屏幕等效约 ±40px），进一步错开
+  const yParity = (i%2===0? -1: 1)*4.5;
+  // 横向振幅加大：左右条目投影在屏幕中线两侧保持充足间距
+  const lateral = (state.mode==='world'||state.mode==='river') ? 25 : 24;
+  return new THREE.Vector3(side*(lateral+r()*8)*AMP_SCALE, 6+(i%3)*4.6+(r()-.5)*3+yParity, 34+i*flowSpacing());
+}
+function buildFlow(){
+  entriesEl.innerHTML='';
+  state.entries=[]; state.eras=[];
+  state.items=flowItems();
+  const isRiver = state.mode==='river';
+  const isSong = state.mode==='song';
+  const isWorld = state.mode==='world';
+  let lastKey=null;
+  const seenDyn=new Set(); // 长河中朝代节点只标一次（避免「现代」在年月之间反复闪现）
+  state.items.forEach((it,i)=>{
+    const iw = it.orig!==undefined;          // 世界诗乐条目
+    const isg = isSongIt(it);                // 中文歌曲条目
+    const key = isRiver ? (iw? it.node : (isg? it.y : it.d)) : (isSong? it.y : (isWorld? it.node : it.d));
+    // 年代节点
+    const dynKey = isRiver && !iw && !isg;   // 长河里的朝代型节点
+    if(key!==lastKey && (!dynKey || !seenDyn.has(key))){
+      lastKey=key;
+      if(dynKey) seenDyn.add(key);
+      const dyn = !iw && !isg; // 中文诗歌：朝代样式，其余为年份样式
+      const el=document.createElement('div');
+      el.className='era'+(dyn && !isSong && !isWorld ? '' : ' yr');
+      el.innerHTML = (dyn && !isSong && !isWorld)? `${key}<span class="sub">${ERA_SUB[key]||''}</span>` : `${key}`;
+      entriesEl.appendChild(el);
+      const p=anchorPos(i);
+      state.eras.push({el, anchor:new THREE.Vector3(-p.x*0.9, p.y+6, p.z-16), i});
+    }else lastKey=key;
+    const el=document.createElement('div');
+    el.className='entry';
+    if(iw){
+      const jp=/[\u3040-\u30ff]/.test(it.orig); // 日文原文：明朝体，不斜体
+      const meta=[it.author, it.title, it.tr, it.node].filter(Boolean).join(' · ');
+      el.innerHTML=`<div class="qo${jp?' jp':''}">${it.orig}</div><div class="qt">${it.trans}</div><div class="m">${meta}</div>`;
+    }else{
+      el.innerHTML=`<div class="q">「${it.t}」</div><div class="m">${whoOf(it)}</div>`;
+    }
+    el.addEventListener('click',(ev)=>{ ev.stopPropagation(); selectEntry(i); });
+    el.addEventListener('dblclick',(ev)=>{ // 双击 = 直接收进拾月集
+      ev.stopPropagation();
+      if(state.locked || !state.landed) return;
+      if(collectEntry(i)){
+        flashCollected(el);
+        if(state.selected===i && spotEl.classList.contains('show')) syncCollectBtn();
+      }
+    });
+    entriesEl.appendChild(el);
+    state.entries.push({el, anchor:anchorPos(i), ph:i*1.37});
+  });
+  // 底部缓停时让末条停在身前（d≈30，仍清晰可见）而非彻底掠过身后
+  state.maxZ = state.items.length? Math.max(0, 34+(state.items.length-1)*flowSpacing()-30) : 0;
+  state.minZ = initialCamZ();
+  state.camZ = state.minZ; state.camTargetZ = state.minZ;
+  tsBuild();
+}
+
+/* ---------------- 拾月集：摘抄本（localStorage 持久化） ---------------- */
+const NB_KEY='moonJournalV1';
+const notebookEl=document.getElementById('notebook'), nbListEl=document.getElementById('nbList'),
+      nbCountEl=document.getElementById('nbCount'), collectBtn=document.getElementById('collectBtn');
+let journal=[];
+try{ journal=JSON.parse(localStorage.getItem(NB_KEY)||'[]'); if(!Array.isArray(journal)) journal=[]; }catch(e){ journal=[]; }
+function saveJournal(){ try{ localStorage.setItem(NB_KEY, JSON.stringify(journal)); }catch(e){} }
+function journalKey(it){ const isW=it.orig!==undefined; return (isW?it.orig:it.t)+'@'+(isW?it.author+it.title:it.a+it.s); }
+function isCollected(it){ const k=journalKey(it); return journal.some(j=>j.k===k); }
+function escHtml(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function updateNbCount(bump){
+  nbCountEl.textContent=journal.length;
+  nbCountEl.classList.toggle('on', journal.length>0);
+  if(bump){ nbCountEl.classList.remove('bump'); void nbCountEl.offsetWidth; nbCountEl.classList.add('bump'); }
+}
+function renderJournal(){
+  if(!journal.length){
+    nbListEl.innerHTML=`<div class="nb-empty">笺上尚无文字。<br>点击喜爱的诗句或歌词，<br>在文字下方将它「收进拾月集」。</div>`;
+    return;
+  }
+  nbListEl.innerHTML=journal.map((j,i)=>`
+    <div class="nb-item" data-k="${escHtml(j.k)}">
+      <span class="nb-grip" title="按住拖拽排序">⋮⋮</span>
+      <div class="nb-text">${j.orig? `<span class="nb-orig">${escHtml(j.orig)}</span><span class="nb-trans">${escHtml(j.trans)}</span>` : escHtml(j.text)}</div>
+      <div class="nb-who">${escHtml(j.who)}<span class="nb-meta">${escHtml(j.meta||'')}</span></div>
+      <button class="nb-del" data-k="${escHtml(j.k)}" title="移出拾月集">×</button>
+    </div>`).join('');
+}
+nbListEl.addEventListener('click', ev=>{
+  const btn=ev.target.closest('.nb-del'); if(!btn) return;
+  const i=journal.findIndex(j=>j.k===btn.dataset.k);
+  if(i<0) return;
+  journal.splice(i,1);
+  saveJournal(); renderJournal(); updateNbCount(false);
+  if(spotEl.classList.contains('show')) syncCollectBtn(); // 笺中移除后，若聚光正显示该条，按钮恢复可收录
+});
+
+/* 拾月集 · 拖拽排序（按住手柄 ⋮⋮ 上下拖动，兼容触摸） */
+let nbDrag=null;
+nbListEl.addEventListener('pointerdown', ev=>{
+  const grip=ev.target.closest('.nb-grip'); if(!grip) return;
+  const item=grip.closest('.nb-item'); if(!item || nbDrag) return;
+  ev.preventDefault();
+  const ph=document.createElement('div');
+  ph.className='nb-item nb-placeholder';
+  ph.style.height=item.offsetHeight+'px';
+  nbDrag={item, ph, startY:ev.clientY, origTop:item.offsetTop, h:item.offsetHeight};
+  nbListEl.insertBefore(ph, item);
+  item.classList.add('dragging');
+  item.style.top=nbDrag.origTop+'px';
+  try{ grip.setPointerCapture(ev.pointerId); }catch(e){}
+});
+nbListEl.addEventListener('pointermove', ev=>{
+  if(!nbDrag) return;
+  ev.preventDefault();
+  const {item, ph, startY, origTop, h}=nbDrag;
+  const maxTop=Math.max(0, nbListEl.scrollHeight-h);
+  const newTop=Math.min(Math.max(origTop+ev.clientY-startY, 0), maxTop);
+  item.style.top=newTop+'px';
+  const mid=newTop+h/2;
+  const sibs=[...nbListEl.querySelectorAll('.nb-item:not(.dragging):not(.nb-placeholder)')];
+  const before=sibs.find(el=>el.offsetTop+el.offsetHeight/2>mid);
+  nbListEl.insertBefore(ph, before||null);
+});
+function endNbDrag(){
+  if(!nbDrag) return;
+  const {item, ph}=nbDrag;
+  nbListEl.insertBefore(item, ph); ph.remove();
+  item.classList.remove('dragging'); item.style.top='';
+  nbDrag=null;
+  const order=[...nbListEl.querySelectorAll('.nb-item')].map(el=>el.dataset.k);
+  journal.sort((a,b)=>order.indexOf(a.k)-order.indexOf(b.k));
+  saveJournal(); renderJournal();
+}
+nbListEl.addEventListener('pointerup', endNbDrag);
+nbListEl.addEventListener('pointercancel', endNbDrag);
+document.getElementById('notebookBtn').addEventListener('click', ev=>{
+  ev.stopPropagation(); renderJournal(); notebookEl.classList.add('open');
+});
+document.getElementById('nbClose').addEventListener('click', ()=>notebookEl.classList.remove('open'));
+addEventListener('keydown', ev=>{ if(ev.key==='Escape') notebookEl.classList.remove('open'); });
+document.getElementById('nbDownload').addEventListener('click', ()=>{
+  if(!journal.length) return;
+  const lines=['我有一只月亮 · 拾月集','—— 沿途拾月，满笺清辉',''];
+  journal.forEach((j,i)=>{
+    lines.push(`${i+1}.`);
+    if(j.orig){ lines.push(j.orig); lines.push(j.trans); }
+    else lines.push(`「${j.text}」`);
+    lines.push(`${j.who}${j.meta? '　（'+j.meta+'）':''}`, '');
+  });
+  lines.push('—— 但愿人长久，千里共婵娟 ——');
+  const blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='拾月集.txt';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+});
+/* ---------------- 笺纸图片设计器：底色 / 花纹 / 月相 ---------------- */
+const NB_BGS=[
+  {id:'xuan',   name:'宣纸',   bg:'#f6efe0', ink:'#33291d', sub:'#8a7a5e', accent:'#a8894f', moonHi:'#fffdf2', moonSh:'#ddd2b4', dot:'#f6efe0'},
+  {id:'yuebai', name:'月白',   bg:'#e6eef2', ink:'#2b3a44', sub:'#647886', accent:'#7d97a6', moonHi:'#ffffff', moonSh:'#c6d6de', dot:'#e6eef2'},
+  {id:'dai',    name:'黛蓝',   bg:'#1d2a44', ink:'#ece4cf', sub:'#a39b80', accent:'#c9b478', moonHi:'#f7f0da', moonSh:'#2a3a58', dot:'#1d2a44'},
+  {id:'xuanye', name:'玄夜',   bg:'#0e1220', ink:'#e6dfc9', sub:'#8f8a76', accent:'#bfa76a', moonHi:'#f4ecd4', moonSh:'#1a2136', dot:'#0e1220'},
+];
+const NB_PATS=[['none','无'],['huiwen','回纹'],['haishui','海水纹'],['xiangyun','祥云'],['both','回纹 · 海水']];
+const nbmImgs={};
+[['huiwen','wen-huiwen.png'],['haishui','wen-haishui.png']].forEach(([k,src])=>{
+  const img=new Image();
+  img.onload=()=>{ nbmImgs[k]=img; if(nbMakerEl.classList.contains('open')) nbmRender(); };
+  img.src=src;
+});
+function hexRGB(h){ return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]; }
+function hexA(h,a){ const c=hexRGB(h); return `rgba(${c[0]},${c[1]},${c[2]},${a})`; }
+const NB_MOONS=[['none','无'],['full','满月'],['gibbous','盈凸'],['half','上弦'],['crescent','蛾眉'],['waning','残月']];
+const nbm={bg:'xuan', pat:'huiwen', moon:'full'};
+const nbMakerEl=document.getElementById('nbMaker'), nbmCanvas=document.getElementById('nbmCanvas');
+function nbmChips(elId, list, key, render){
+  const el=document.getElementById(elId);
+  el.innerHTML=list.map(o=>{
+    const id=Array.isArray(o)?o[0]:o.id, name=Array.isArray(o)?o[1]:o.name;
+    const dot=!Array.isArray(o)?`<span class="dot" style="background:${o.dot}"></span>`:'';
+    return `<button class="nbm-chip${nbm[key]===id?' on':''}" data-v="${id}">${dot}${name}</button>`;
+  }).join('');
+  el.querySelectorAll('.nbm-chip').forEach(b=>b.addEventListener('click',()=>{
+    nbm[key]=b.dataset.v; nbmChips(elId,list,key,render); render();
+  }));
+}
+function nbmWrap(ctx,text,maxW){
+  const lines=[]; let cur='';
+  for(const ch of String(text)){
+    if(ch==='\n'){ lines.push(cur); cur=''; continue; }
+    if(ctx.measureText(cur+ch).width>maxW && cur){ lines.push(cur); cur=ch; }
+    else cur+=ch;
+  }
+  if(cur) lines.push(cur);
+  return lines;
+}
+function nbmSpaced(ctx,text,cx,y,sp){
+  const chars=[...text]; const ws=chars.map(c=>ctx.measureText(c).width);
+  const total=ws.reduce((a,b)=>a+b,0)+sp*(chars.length-1);
+  let x=cx-total/2;
+  chars.forEach((c,i)=>{ ctx.fillText(c,x,y); x+=ws[i]+sp; });
+}
+const NBM_MARIA=[[-.28,-.20,.34,.30],[.14,.24,.26,.20],[.36,-.10,.17,.16],[-.04,-.46,.22,.16],[.02,.48,.28,.20],[-.50,.14,.15,.12],[.30,-.38,.13,.12]];
+function nbmMoon(ctx,x,y,r,phase,pal){
+  if(phase==='none') return;
+  // 逐像素球面光照：柔和明暗界线 + 月海斑块 + 边缘抗锯齿（emoji 式自然月相）
+  const TH={full:0, gibbous:.60, half:Math.PI/2, crescent:2.31, waning:-2.31};
+  const th=TH[phase]??0, Lx=Math.sin(th), Lz=Math.cos(th);
+  const S=Math.ceil(r*4);
+  if(!nbmMoon.off) nbmMoon.off=document.createElement('canvas');
+  const off=nbmMoon.off; off.width=off.height=S;
+  const c2=off.getContext('2d');
+  const img=c2.createImageData(S,S), d=img.data;
+  const hi=hexRGB(pal.moonHi), sh=hexRGB(pal.moonSh);
+  const half=S/2;
+  for(let py=0;py<S;py++) for(let px=0;px<S;px++){
+    const nx=(px+.5-half)/half, ny=(py+.5-half)/half, rr=nx*nx+ny*ny;
+    if(rr>1) continue;
+    const nz=Math.sqrt(1-rr);
+    let k=nx*Lx+nz*Lz;                      // 光照强度 = 法线·光线
+    k=clamp((k+.10)/.26,0,1); k=k*k*(3-2*k); // 明暗界线柔和过渡
+    let m=0;                                 // 月海
+    for(const [mx,my,mr,ma] of NBM_MARIA){
+      const dx=nx-mx, dy=ny-my, q=(dx*dx+dy*dy)/(mr*mr);
+      if(q<1) m=Math.max(m, ma*(1-q)*(1-q));
+    }
+    const edge=clamp((1-Math.sqrt(rr))*half*1.2,0,1); // 边缘抗锯齿
+    const litR=hi[0]*(1-m*.34), litG=hi[1]*(1-m*.34), litB=hi[2]*(1-m*.34);
+    const i=(py*S+px)*4;
+    d[i]  =sh[0]+(litR-sh[0])*k;
+    d[i+1]=sh[1]+(litG-sh[1])*k;
+    d[i+2]=sh[2]+(litB-sh[2])*k;
+    d[i+3]=255*edge;
+  }
+  c2.putImageData(img,0,0);
+  ctx.save();
+  const halo=ctx.createRadialGradient(x,y,r*.65,x,y,r*1.7);
+  halo.addColorStop(0,hexA(pal.moonHi,.28)); halo.addColorStop(1,hexA(pal.moonHi,0));
+  ctx.fillStyle=halo; ctx.beginPath(); ctx.arc(x,y,r*1.7,0,Math.PI*2); ctx.fill();
+  ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+  ctx.drawImage(off,x-r,y-r,r*2,r*2);
+  ctx.restore();
+}
+function nbmTint(img,color,w,h){ // 传统纹样按底色方案的点缀色重新着色（保留透明通道）
+  const c=document.createElement('canvas'); c.width=w; c.height=h;
+  const x2=c.getContext('2d');
+  x2.drawImage(img,0,0,w,h);
+  x2.globalCompositeOperation='source-in';
+  x2.fillStyle=color; x2.fillRect(0,0,w,h);
+  return c;
+}
+function nbmPattern(ctx,W,H,pat,pal){
+  if(pat==='none') return;
+  const M=110;
+  ctx.save();
+  if(pat==='huiwen'||pat==='both'){ // 回纹缘饰：顶部（both 时仅顶部）
+    const img=nbmImgs.huiwen;
+    if(img){
+      const bh=42, bw=W-2*M+56;
+      const t=nbmTint(img,pal.accent,Math.round(bw),bh);
+      ctx.globalAlpha=.5;
+      ctx.drawImage(t,M-28,44,bw,bh);
+      if(pat==='huiwen') ctx.drawImage(t,M-28,H-44-bh,bw,bh);
+    }
+  }
+  if(pat==='haishui'||pat==='both'){ // 海水纹：底部横带
+    const img=nbmImgs.haishui;
+    if(img){
+      const bw=W, bh=Math.round(bw*img.height/img.width); // 保持宽高比
+      const t=nbmTint(img,pal.accent,Math.round(bw),bh);
+      ctx.globalAlpha=.42;
+      ctx.drawImage(t,0,H-bh,bw,bh);
+    }
+  }
+  ctx.restore();
+}
+/* 祥云纹：同心云卷 + 横托 + 流云细线（依图3传统祥云纹程序化绘制） */
+function nbmPuff(ctx,cx,cy,r){
+  [1,.66,.34].forEach(k=>{ ctx.beginPath(); ctx.arc(cx,cy,r*k,0,Math.PI*2); ctx.stroke(); });
+  ctx.beginPath(); ctx.arc(cx,cy,Math.max(r*.09,1.4),0,Math.PI*2); ctx.fill();
+}
+function nbmXiangyun(ctx,cx,base,s,color){
+  ctx.save();
+  ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineCap='round';
+  const bw=150*s;
+  // 云卷簇：中大、右次、左小，底部没入横托（裁剪至横托线以上）
+  ctx.save();
+  ctx.beginPath(); ctx.rect(cx-bw-30*s, base-95*s, 2*bw+60*s, 93*s); ctx.clip();
+  ctx.lineWidth=2.2*s;
+  nbmPuff(ctx,cx+4*s,  base-20*s, 30*s);
+  nbmPuff(ctx,cx+42*s, base-12*s, 20*s);
+  nbmPuff(ctx,cx-38*s, base-8*s,  14*s);
+  ctx.restore();
+  // 横托
+  ctx.beginPath(); ctx.roundRect(cx-bw, base-3.5*s, bw*2, 7*s, 3.5*s); ctx.fill();
+  // 两侧流云细线（外长内短、上一下一）
+  ctx.lineWidth=1.6*s;
+  [[bw+14*s,bw+120*s,-2*s],[bw+28*s,bw+84*s,10*s]].forEach(([a,b,dy])=>{
+    ctx.beginPath(); ctx.moveTo(cx+a,base+dy); ctx.lineTo(cx+b,base+dy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx-a,base+dy); ctx.lineTo(cx-b,base+dy); ctx.stroke();
+  });
+  // 外线端部云脚小卷
+  [1,-1].forEach(d=>{
+    ctx.beginPath(); ctx.arc(cx+d*(bw+126*s), base-8*s, 6*s, Math.PI, 0); ctx.stroke();
+  });
+  ctx.restore();
+}
+async function nbmRender(){
+  await document.fonts.ready;
+  const pal=NB_BGS.find(b=>b.id===nbm.bg)||NB_BGS[0];
+  const W=1240,H=1754,M=110;
+  const ctx=nbmCanvas.getContext('2d');
+  const KAI='"Kaiti SC","STKaiti","KaiTi","Noto Serif SC",serif';
+  const SERIF='"EB Garamond","Noto Serif SC",serif';
+  // 版面自适应：内容超高则整体缩小正文字号（量尺以正文末端为准，结尾钉底不参与）
+  let scale=1;
+  const seaBand=(nbm.pat==='haishui'||nbm.pat==='both');
+  for(;scale>.6;scale-=.05){ if(nbmLayout(ctx,pal,W,H,M,KAI,SERIF,scale,true) <= (seaBand?1302:1402)) break; }
+  // 正式绘制
+  ctx.fillStyle=pal.bg; ctx.fillRect(0,0,W,H);
+  const vg=ctx.createRadialGradient(W/2,H/2,H*.28,W/2,H/2,H*.78);
+  vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,pal.id==='xuan'||pal.id==='yuebai'?'rgba(90,70,40,.10)':'rgba(0,0,0,.28)');
+  ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+  nbmPattern(ctx,W,H,nbm.pat,pal);
+  nbmLayout(ctx,pal,W,H,M,KAI,SERIF,scale,false);
+}
+function nbmLayout(ctx,pal,W,H,M,KAI,SERIF,scale,measureOnly){
+  const ink=pal.ink, sub=pal.sub, accent=pal.accent;
+  let y=0;
+  const draw=(fn)=>{ if(!measureOnly) fn(); };
+  // 祥云：笺纸顶端云饰
+  const xyTop = nbm.pat==='xiangyun';
+  if(xyTop) draw(()=>{ ctx.save(); ctx.globalAlpha=.5; nbmXiangyun(ctx,W/2,96,1,accent); ctx.restore(); });
+  // 月相装饰（与顶部云饰/缘饰、标题保持疏朗间距）
+  const moonCy = xyTop? 246 : 178;
+  if(nbm.moon!=='none'){ draw(()=>nbmMoon(ctx,W/2,moonCy,52,nbm.moon,pal)); y=moonCy+132; } else y=xyTop? 240 : 190;
+  // 标题
+  ctx.textBaseline='alphabetic';
+  draw(()=>{ ctx.fillStyle=ink; ctx.font=`600 ${Math.round(56)}px ${KAI}`; nbmSpaced(ctx,'拾月集',W/2,y,26); });
+  y+=52;
+  draw(()=>{ ctx.fillStyle=sub; ctx.font=`${Math.round(21)}px ${KAI}`; nbmSpaced(ctx,'沿途拾月，满笺清辉',W/2,y,6); });
+  y+=52;
+  draw(()=>{
+    ctx.strokeStyle=accent; ctx.globalAlpha=.55; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.moveTo(M+40,y); ctx.lineTo(W/2-26,y); ctx.moveTo(W/2+26,y); ctx.lineTo(W-M-40,y); ctx.stroke();
+    ctx.globalAlpha=.9; ctx.fillStyle=accent;
+    ctx.save(); ctx.translate(W/2,y); ctx.rotate(Math.PI/4); ctx.fillRect(-4.5,-4.5,9,9); ctx.restore();
+    ctx.globalAlpha=1;
+  });
+  y+=76;
+  // 条目
+  const maxW=W-2*M-20;
+  journal.forEach((j,i)=>{
+    const txtFs=Math.round(30*scale), whoFs=Math.round(21*scale);
+    const lh=Math.round(50*scale);
+    draw(()=>{ ctx.fillStyle=accent; // 每条前方一枚小圆点
+      ctx.beginPath(); ctx.arc(M-30,y-txtFs*.30,4.4,0,Math.PI*2); ctx.fill(); });
+    if(j.orig){
+      ctx.font=`italic ${Math.round(27*scale)}px ${SERIF}`;
+      nbmWrap(ctx,j.orig,maxW).forEach(line=>{ draw(()=>{ ctx.fillStyle=ink; ctx.fillText(line,M,y); }); y+=lh*.92; });
+      ctx.font=`${Math.round(24*scale)}px ${KAI}`;
+      nbmWrap(ctx,j.trans,maxW).forEach(line=>{ draw(()=>{ ctx.fillStyle=sub; ctx.fillText(line,M,y); }); y+=lh*.86; });
+    }else{
+      ctx.font=`${txtFs}px ${KAI}`;
+      nbmWrap(ctx,'「'+j.text+'」',maxW).forEach(line=>{ draw(()=>{ ctx.fillStyle=ink; ctx.fillText(line,M,y); }); y+=lh; });
+    }
+    y+=Math.round(10*scale);
+    const whoTxt='—— '+j.who+(j.meta?'　（'+j.meta+'）':'');
+    ctx.font=`${whoFs}px ${KAI}`;
+    nbmWrap(ctx,whoTxt,maxW).forEach(line=>{ draw(()=>{ ctx.fillStyle=sub; ctx.textAlign='right'; ctx.fillText(line,W-M,y); ctx.textAlign='left'; }); y+=Math.round(34*scale); });
+    y+=Math.round(44*scale);
+  });
+  // 结尾（钉底：与摘抄文字保持间距，海水纹时避开底部纹带）
+  const contentEnd=y;
+  const floorY=(nbm.pat==='haishui'||nbm.pat==='both')? H-368 : H-268;
+  y=Math.max(y+84, floorY);
+  if(nbm.pat==='xiangyun'){ // 祥云：结尾上方一朵小云
+    draw(()=>{ ctx.save(); ctx.globalAlpha=.42; nbmXiangyun(ctx,W/2,y-46,.55,accent); ctx.restore(); });
+  }
+  draw(()=>{ ctx.fillStyle=accent; ctx.font=`${Math.round(24)}px ${KAI}`; ctx.textAlign='center';
+    ctx.fillText('—— 但愿人长久 · 千里共婵娟 ——',W/2,y); });
+  y+=50;
+  draw(()=>{ ctx.fillStyle=sub; ctx.font=`${Math.round(17)}px ${SERIF}`; ctx.textAlign='center';
+    ctx.fillText('我有一只月亮 · 挂在遥远天上',W/2,y); ctx.textAlign='left'; });
+  return measureOnly? contentEnd : y;
+}
+function nbmRefresh(){ nbmChips('nbmBgs',NB_BGS,'bg',nbmRender); nbmChips('nbmPats',NB_PATS,'pat',nbmRender); nbmChips('nbmMoons',NB_MOONS,'moon',nbmRender); nbmRender(); }
+document.getElementById('nbImage').addEventListener('click', ev=>{
+  ev.stopPropagation();
+  if(!journal.length) return;
+  nbMakerEl.classList.add('open'); nbmRefresh();
+});
+document.getElementById('nbmClose').addEventListener('click', ()=>nbMakerEl.classList.remove('open'));
+nbMakerEl.addEventListener('click', ev=>{ if(ev.target===nbMakerEl) nbMakerEl.classList.remove('open'); });
+addEventListener('keydown', ev=>{ if(ev.key==='Escape') nbMakerEl.classList.remove('open'); });
+document.getElementById('nbmSave').addEventListener('click', ()=>{
+  nbmCanvas.toBlob(b=>{
+    if(!b) return;
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(b); a.download='拾月集.jpg';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+  },'image/jpeg',.92);
+});
+function collectEntry(i){
+  const it=state.items[i]; if(!it || isCollected(it)) return false;
+  const isW=it.orig!==undefined;
+  journal.push({
+    k:journalKey(it),
+    text:isW? null:it.t, orig:isW? it.orig:null, trans:isW? it.trans:null,
+    who:whoOf(it),
+    meta:isW? it.node : (isSongIt(it)? String(it.y)+'年' : it.d),
+  });
+  saveJournal(); updateNbCount(true);
+  if(notebookEl.classList.contains('open')) renderJournal();
+  return true;
+}
+function flashCollected(el){ el.classList.add('just-collected'); setTimeout(()=>el.classList.remove('just-collected'),1400); }
+function syncCollectBtn(){
+  const it=state.items[state.selected];
+  if(!it || !state.landed){ collectBtn.classList.remove('show'); return; }
+  const done=isCollected(it);
+  collectBtn.textContent=done?'已在笺中 ✓':'收进拾月集';
+  collectBtn.classList.toggle('done',done);
+  const r=spotEl.getBoundingClientRect();
+  collectBtn.style.left=r.left+'px';
+  collectBtn.style.top=Math.min(r.bottom+20, innerHeight-(innerWidth<768?98:116))+'px';
+  collectBtn.classList.add('show');
+}
+collectBtn.addEventListener('click', ev=>{
+  ev.stopPropagation();
+  if(collectEntry(state.selected)){ collectBtn.textContent='已收进笺中 ✓'; collectBtn.classList.add('done'); }
+});
+updateNbCount(false);
+
+/* ---------------- 选中 / 聚光诗句 ---------------- */
+let spotTimer=null, spotLastShown=0;
+function showSpot(it, dur){
+  clearTimeout(spotTimer);
+  spotLastShown=performance.now();
+  const isW = it.orig!==undefined;
+  const who = whoOf(it);
+  spotEl.innerHTML = isW
+    ? `<span class="who">${who}</span><span class="spot-verse"><span class="orig">${it.orig}</span><span class="trans">${it.trans}</span></span>`
+    : `<span class="who">${who}</span><span class="spot-verse">${it.t}</span>`;
+  spotEl.classList.remove('show');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ spotEl.classList.add('show'); syncCollectBtn(); }));
+  spotTimer=setTimeout(()=>{ spotEl.classList.remove('show'); collectBtn.classList.remove('show'); }, dur||8000);
+}
+// 世界版开场引言：但愿人长久，千里共婵娟
+function showWorldIntro(){
+  clearTimeout(spotTimer);
+  collectBtn.classList.remove('show');
+  spotEl.innerHTML=`<span class="who">无论身在何处，我们拥有同一只月亮</span><span class="spot-verse">但愿人长久\n千里共婵娟</span>`;
+  spotEl.classList.remove('show');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>spotEl.classList.add('show')));
+  spotTimer=setTimeout(()=>spotEl.classList.remove('show'), 3000);
+}
+function hideSpot(){ clearTimeout(spotTimer); spotEl.classList.remove('show'); collectBtn.classList.remove('show'); }
+function selectEntry(i, initial){
+  if((state.locked || !state.landed) && !initial) return;
+  state.selected=i;
+  const it=state.items[i];
+  if(!it) return;
+  state.entries.forEach((e,k)=>e.el.classList.toggle('active',k===i));
+  animatePhaseTo(PHASE_ANGLE[it.phase] ?? 0);
+  if(state.landed && !(initial && state.mode==='world')) showSpot(it);
+}
+document.addEventListener('click',(e)=>{
+  if(!e.target.closest('.entry') && !e.target.closest('button')) hideSpot();
+});
+
+/* ---------------- 滚动：溯游时间长河 ---------------- */
+let hintDone=false;
+function pushScroll(delta){
+  if(state.locked || !state.landed) return;
+  state.camTargetZ = clamp(state.camTargetZ + delta, state.minZ, state.maxZ);
+  if(!hintDone){ hintDone=true; hintEl.classList.add('gone'); }
+}
+addEventListener('wheel',(e)=>{ pushScroll(e.deltaY*0.055); },{passive:true});
+let touchY=null;
+addEventListener('touchstart',(e)=>{ touchY=e.touches[0].clientY; },{passive:true});
+addEventListener('touchmove',(e)=>{
+  if(touchY===null) return;
+  const y=e.touches[0].clientY;
+  pushScroll((touchY-y)*0.14);
+  touchY=y;
+},{passive:true});
+
+/* 底部时间线滚轮：拖动 / 点按快速定位 */
+const tscrubEl=document.getElementById('tscrub'), tsDotEl=document.getElementById('tsDot'),
+      tsTicksEl=document.getElementById('tsTicks'), tsYearEl=document.getElementById('tsYear');
+let tsDrag=false;
+function tsSet(clientX){
+  const r=tscrubEl.getBoundingClientRect();
+  const f=Math.min(1,Math.max(0,(clientX-r.left)/r.width));
+  const span=state.maxZ-state.minZ;
+  if(span>0 && state.landed && !state.locked){
+    state.camTargetZ=state.minZ+f*span;
+    if(!hintDone){ hintDone=true; hintEl.classList.add('gone'); }
+  }
+}
+tscrubEl.addEventListener('pointerdown',ev=>{ ev.stopPropagation(); tsDrag=true; tscrubEl.setPointerCapture(ev.pointerId); tsSet(ev.clientX); });
+tscrubEl.addEventListener('pointermove',ev=>{ if(tsDrag) tsSet(ev.clientX); });
+tscrubEl.addEventListener('pointerup',()=>{ tsDrag=false; });
+tscrubEl.addEventListener('pointercancel',()=>{ tsDrag=false; });
+function tsYearText(y){ if(y>=9000) return '··'; return y<0 ? '前'+(-y) : (''+y); }
+function tsYearOf(it){
+  if(it.yk!==undefined) return it.yk;
+  if(it.orig!==undefined) return worldYear(it.node);
+  if(isSongIt(it)) return it.y;
+  return POEM_Y[it.a+'|'+it.s]??9999;
+}
+/* 拨轮刻度：按当前模式的系年范围铺设。诗歌模式标朝代，其余标年份 */
+function tsBuild(){
+  // 小专题时间跨度小，不铺时间轴
+  tscrubEl.classList.toggle('ts-off', state.mode==='poem' && !!state.theme && state.theme!=='全部');
+  tsTicksEl.innerHTML='';
+  const n=state.items.length, span=state.maxZ-state.minZ;
+  if(n<2 || span<=0){ tsYearEl.textContent=''; return; }
+  const z0=34, z1=34+(n-1)*flowSpacing();
+  const frag=document.createDocumentFragment();
+  const mkTick=(f,cls)=>{ if(f<-0.001||f>1.001) return; const t=document.createElement('i'); t.className='ts-tick '+cls; t.style.left=(f*100)+'%'; frag.appendChild(t); };
+  const mkLab=(f,txt,cls,shift)=>{ if(f<0||f>1) return; if(innerWidth<768 && f*innerWidth>innerWidth-118) return; const s=document.createElement('b'); s.className='ts-lab'+(cls?' '+cls:''); s.style.left=(f*100)+'%'; if(shift) s.style.marginLeft=shift+'px'; s.textContent=txt; frag.appendChild(s); };
+  if(state.mode==='poem'){
+    const seen=new Set();
+    const narrow=innerWidth<768;
+    let lastRight=-99; // 窄屏相邻标签水平微挪，保持底部对齐
+    state.items.forEach((it,i)=>{
+      if(seen.has(it.d)) return; seen.add(it.d);
+      const f=(34+i*flowSpacing()-state.minZ)/span;
+      mkTick(f,'mj');
+      const v = narrow && it.d.length===2;
+      const px = f*innerWidth, lw = narrow ? (v?13:10) : it.d.length*10;
+      let shift = 0;
+      if(narrow && px - lw/2 < lastRight + 4) shift = lastRight + 4 - (px - lw/2);
+      mkLab(f,it.d,v?'v':'',shift);
+      lastRight = px - lw/2 + shift + lw;
+    });
+  }else{
+    const ys=state.items.map(tsYearOf).filter(y=>y<9000);
+    if(ys.length){
+      const y0=Math.min.apply(null,ys), y1=Math.max.apply(null,ys);
+      const R=Math.max(1,y1-y0);
+      const steps=[1,2,5,10,20,50,100,200,500,1000,2000];
+      let step=steps[steps.length-1], best=1e9;
+      steps.forEach(s=>{ const d=Math.abs(R/s-9); if(R/s>=2.5 && d<best){ best=d; step=s; } });
+      const start=Math.ceil(y0/step)*step;
+      for(let Y=start; Y<=y1; Y+=step){
+        if(Y===0) continue; // 没有公元0年
+        const f=(z0+(Y-y0)/R*(z1-z0)-state.minZ)/span;
+        mkTick(f,'mj'); mkLab(f,tsYearText(Y));
+        if(step>=10){
+          for(let k=1;k<5;k++){
+            const Ym=Y+k*step/5;
+            if(Ym>y1 || Ym===0) continue;
+            mkTick((z0+(Ym-y0)/R*(z1-z0)-state.minZ)/span,'mn');
+          }
+        }
+      }
+    }
+  }
+  tsTicksEl.appendChild(frag);
+}
+function tsSync(){
+  const span=state.maxZ-state.minZ;
+  const f=span>0 ? (state.camZ-state.minZ)/span : 0;
+  tsDotEl.style.left=(f*100)+'%';
+  if(!state.items.length){ tsYearEl.textContent=''; return; }
+  // 年份读数取最近的真实条目，跟着浏览位置走
+  const i=Math.min(state.items.length-1,Math.max(0,Math.round((state.camZ-34)/flowSpacing())));
+  const it=state.items[i];
+  const txt = state.mode==='poem' ? (it.d||'') : tsYearText(tsYearOf(it));
+  if(txt!==tsYearEl.textContent) tsYearEl.textContent=txt;
+  // 读数跟随圆点，钳制在两端以内（避开右下按钮区）
+  const w=tscrubEl.clientWidth||innerWidth;
+  const x=Math.min(w-(innerWidth<768?132:170),Math.max(46,f*w));
+  tsYearEl.style.left=x+'px';
+}
+
+/* ---------------- 投影 ---------------- */
+const projV=new THREE.Vector3();
+function projectEntries(t){
+  const w=innerWidth, h=innerHeight, isWorld=state.mode==='world';
+  // 世界篇在抵达镜头前先开始边界淡出，避免投影奇点造成“撞墙后甩出画面”
+  const far=isWorld?170:150, behind=isWorld?10:-8, farFade=isWorld?56:40, nearFade=isWorld?20:7;
+  let focusIdx=-1, focusScore=1e9, focusX=0;
+  const probes=[];
+  const fadeOp = d => {
+    if(d<=behind || d>=far) return 0;
+    const o = Math.min(smooth01((far-d)/farFade), smooth01((d-behind)/nearFade));
+    return Math.pow(o, 1.4); // 中间亮、两头快隐
+  };
+  const edgeOp = (x,y)=>Math.pow(
+    smooth01((x+90)/150)*smooth01((w-x+90)/150)*
+    smooth01((y+80)/130)*smooth01((h-y+80)/130), .72
+  );
+  for(let i=0;i<state.entries.length;i++){
+    const e=state.entries[i];
+    projV.copy(e.anchor).project(camera);
+    const d=e.anchor.z - state.camZ;
+    const sx=(projV.x*.5+.5)*w;
+    const rawY=(-projV.y*.5+.5)*h;
+    let op=fadeOp(d);
+    if(isWorld) op*=edgeOp(sx,rawY);
+    if(d>-50 && d<190) probes.push({i,x:sx,y:rawY,d,op});
+    const score=Math.abs(d-58);
+    if(op>.015 && score<focusScore){ focusScore=score; focusIdx=i; focusX=sx; }
+    if(op<0.01){ e.el.style.opacity='0'; e.el.style.pointerEvents='none'; continue; }
+    const x=sx, y=rawY + Math.sin(t*.5+e.ph)*4;
+    e.el.style.transform=`translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(-50%,-50%)`;
+    e.el.style.opacity=(op*.96).toFixed(3);
+    e.el.style.pointerEvents = (op>.3 && !state.locked && state.landed)?'auto':'none';
+  }
+  for(const er of state.eras){
+    projV.copy(er.anchor).project(camera);
+    const d=er.anchor.z - state.camZ;
+    const sx=(projV.x*.5+.5)*w, rawY=(-projV.y*.5+.5)*h;
+    let op=fadeOp(d);
+    if(isWorld) op*=edgeOp(sx,rawY);
+    if(op<0.01){ er.el.style.opacity='0'; continue; }
+    er.el.style.transform=`translate3d(${sx.toFixed(1)}px,${rawY.toFixed(1)}px,0) translate(-50%,-50%)`;
+    er.el.style.opacity=(op*.8).toFixed(3);
+  }
+  updateInkFocus(focusIdx, probes);
+}
+function smooth01(v){ return clamp(v,0,1); }
+
+/* ---------------- 专题星光粒子插画：留白聚集 · 预告文字靠近后缓缓消散 ---------------- */
+const inkCanvas = document.getElementById('particleInk');
+const inkCtx = inkCanvas.getContext('2d');
+const ink = {
+  w:0, h:0, dpr:1,
+  particles:[], pending:null, backdrop:null, nextBackdrop:null,
+  key:null, mode:'idle', timer:0, visible:false,
+  scene:null, slot:-1, lastSlot:-1, pendingSlot:-1,
+  shapeIdx:0, pendingShape:0, dissolveDur:2.3,
+};
+// 四个可驻留的留白区：左右各一高一低。粒子不跟随每条文字跳动，而是在文字逼近当前区域时迁往下一处留白
+const INK_SLOTS=[
+  {x:.29,y:.55,rx:.18,ry:.22},
+  {x:.71,y:.58,rx:.19,ry:.23},
+  {x:.31,y:.74,rx:.18,ry:.17},
+  {x:.70,y:.74,rx:.18,ry:.17},
+];
+function resizeInk(){
+  ink.dpr = Math.min(devicePixelRatio||1, 2);
+  ink.w = innerWidth; ink.h = innerHeight;
+  inkCanvas.width = Math.floor(ink.w*ink.dpr);
+  inkCanvas.height = Math.floor(ink.h*ink.dpr);
+  inkCanvas.style.width = ink.w+'px';
+  inkCanvas.style.height = ink.h+'px';
+  inkCtx.setTransform(ink.dpr,0,0,ink.dpr,0,0);
+}
+addEventListener('resize', resizeInk);
+resizeInk();
+
+function inkGlowSprite(rgb){
+  const c=document.createElement('canvas'); c.width=c.height=32;
+  const x=c.getContext('2d');
+  const g=x.createRadialGradient(16,16,0,16,16,16);
+  g.addColorStop(0,`rgba(${rgb},1)`);
+  g.addColorStop(.22,`rgba(${rgb},.72)`);
+  g.addColorStop(.58,`rgba(${rgb},.16)`);
+  g.addColorStop(1,`rgba(${rgb},0)`);
+  x.fillStyle=g; x.fillRect(0,0,32,32);
+  return c;
+}
+const inkSprites=[inkGlowSprite('246,242,230'), inkGlowSprite('216,201,163'), inkGlowSprite('190,205,230')];
+
+function addPolyline(out, coords, count, r, jitter=.008){
+  const lens=[0];
+  let total=0;
+  for(let i=1;i<coords.length;i++){
+    total += Math.hypot(coords[i][0]-coords[i-1][0], coords[i][1]-coords[i-1][1]);
+    lens.push(total);
+  }
+  if(total<=0) return;
+  let seg=1;
+  for(let i=0;i<count;i++){
+    const d=(i+.5)/count*total;
+    while(seg<lens.length-1 && lens[seg]<d) seg++;
+    const p0=coords[seg-1], p1=coords[seg];
+    const u=(d-lens[seg-1])/Math.max(1e-6,lens[seg]-lens[seg-1]);
+    out.push({
+      x:lerp(p0[0],p1[0],u)+(r()-.5)*jitter,
+      y:lerp(p0[1],p1[1],u)+(r()-.5)*jitter,
+    });
+  }
+}
+function addBezier(out, p0,p1,p2,p3, count, r, jitter=.01){
+  for(let i=0;i<count;i++){
+    const u=(i+.5)/count, v=1-u;
+    out.push({
+      x:v*v*v*p0[0]+3*v*v*u*p1[0]+3*v*u*u*p2[0]+u*u*u*p3[0]+(r()-.5)*jitter,
+      y:v*v*v*p0[1]+3*v*v*u*p1[1]+3*v*u*u*p2[1]+u*u*u*p3[1]+(r()-.5)*jitter,
+    });
+  }
+}
+function addArc(out, cx,cy,rx,ry, a0,a1, count, r, jitter=.008){
+  for(let i=0;i<count;i++){
+    const u=i/(count-1), a=lerp(a0,a1,u);
+    out.push({x:cx+Math.cos(a)*rx+(r()-.5)*jitter, y:cy+Math.sin(a)*ry+(r()-.5)*jitter});
+  }
+}
+function addRidge(out, count, base, amp, r, phase=0, jitter=.012){
+  for(let i=0;i<count;i++){
+    const u=i/(count-1), x=-1+2*u;
+    const y=base - amp*(.48+.52*Math.sin(u*Math.PI*2.1+phase)) - amp*.22*Math.sin(u*Math.PI*6.3+phase*1.7);
+    out.push({x:x+(r()-.5)*jitter, y:y+(r()-.5)*jitter});
+  }
+}
+function addWave(out, count, y, amp, r, phase=0){
+  for(let i=0;i<count;i++){
+    const u=i/(count-1), x=-1+2*u;
+    out.push({x, y:y+Math.sin(u*Math.PI*4+phase)*amp+(r()-.5)*.008});
+  }
+}
+
+/* 每个专题三种意象；每次成形递增 shapeIdx，避免“同一张图在同一处反复出现” */
+function buildInkShape(sceneName, idx){
+  const r=rng(9100+idx*137);
+  const v=idx%3, pts=[];
+  if(sceneName==='desert'){
+    if(v===0){ // 孤烟、远山、归雁
+      addRidge(pts, 128, .38, .22, r, .4);
+      addRidge(pts, 104, .56, .13, r, 2.1);
+      addBezier(pts, [-.18,.46],[-.28,.12],[-.03,-.16],[-.10,-.78], 112, r, .014);
+      addBezier(pts, [.28,-.30],[.40,-.42],[.52,-.42],[.64,-.30], 34, r, .012);
+      addBezier(pts, [.42,-.30],[.50,-.23],[.58,-.23],[.66,-.30], 30, r, .012);
+    }else if(v===1){ // 烽火台与边关城堞
+      addRidge(pts, 118, .52, .20, r, 1.2);
+      addPolyline(pts, [[-.42,.56],[-.42,-.10],[-.20,-.10],[-.20,.56],[-.42,.56]], 94, r, .01);
+      addPolyline(pts, [[-.48,-.10],[-.48,-.24],[-.38,-.24],[-.38,-.10],[-.30,-.10],[-.30,-.24],[-.20,-.24],[-.20,-.10],[-.12,-.10],[-.12,-.24],[-.04,-.24],[-.04,-.10]], 108, r, .008);
+      addBezier(pts, [.10,.48],[.28,.18],[.18,-.20],[.36,-.64], 96, r, .014);
+      addBezier(pts, [.48,-.30],[.58,-.39],[.68,-.39],[.78,-.30], 38, r, .012);
+    }else{ // 长河落日路、沙丘与星
+      addBezier(pts, [-1,.40],[-.56,.18],[-.12,.62],[1,.30], 118, r, .012);
+      addBezier(pts, [-1,.62],[-.45,.44],[.20,.82],[1,.54], 118, r, .012);
+      addBezier(pts, [-.72,.70],[-.20,.48],[.18,.40],[.70,.68], 94, r, .012);
+      addArc(pts, .42,-.28,.20,.20, Math.PI*.18, Math.PI*1.55, 70, r, .008);
+      for(let k=0;k<36;k++) pts.push({x:-.15+(r()-.5)*.18, y:-.52+(r()-.5)*.12});
+    }
+  }else if(sceneName==='sea'){
+    if(v===0){ // 海上生明月：潮汐、倒影、小舟
+      addPolyline(pts, [[-1,-.34],[1,-.34]], 86, r, .006);
+      for(let k=0;k<4;k++) addWave(pts, 82, .04+k*.17, .035+.008*(k%2), r, k*.8);
+      for(let k=0;k<7;k++){
+        const yy=-.22+k*.105;
+        addPolyline(pts, [[.12+(r()-.5)*.05,yy],[.34+(r()-.5)*.05,yy+.025]], 12, r, .01);
+      }
+      addBezier(pts, [-.42,.44],[-.22,.34],[.04,.34],[.24,.44], 46, r, .01);
+      addPolyline(pts, [[-.09,.36],[-.09,-.02],[.05,.30]], 38, r, .008);
+    }else if(v===1){ // 月影涟漪与远帆
+      for(let k=0;k<4;k++) addArc(pts, .10,.08,.18+k*.15,.08+k*.06, Math.PI*.05, Math.PI*.95, 52, r, .008);
+      for(let k=0;k<3;k++) addWave(pts, 82, .34+k*.15, .028, r, k*1.1);
+      addPolyline(pts, [[-.58,.28],[-.42,.10],[-.24,.28],[-.58,.28]], 58, r, .008);
+      addPolyline(pts, [[-.41,.12],[-.41,-.34],[-.18,.06]], 70, r, .008);
+      addPolyline(pts, [[-1,-.30],[1,-.30]], 70, r, .006);
+    }else{ // 潮线、贝壳与归舟
+      addBezier(pts, [-1,.30],[-.55,.08],[-.05,.48],[1,.16], 110, r, .012);
+      addBezier(pts, [-1,.52],[-.45,.30],[.05,.66],[1,.38], 110, r, .012);
+      addArc(pts, -.36,.30,.16,.10, Math.PI, Math.PI*2, 52, r, .008);
+      addPolyline(pts, [[-.36,.30],[-.46,.18],[-.36,.10],[-.26,.18],[-.36,.30]], 52, r, .008);
+      addBezier(pts, [.12,.34],[.28,.26],[.54,.26],[.72,.36], 54, r, .008);
+      addPolyline(pts, [[.42,.29],[.42,-.12],[.58,.25]], 48, r, .008);
+    }
+  }else if(sceneName==='libai'){
+    if(v===0){ // 峨眉山月、平羌江水
+      addRidge(pts, 154, .20, .48, r, 1.1, .014);
+      addRidge(pts, 108, .42, .28, r, 2.4, .012);
+      addBezier(pts, [-1,.60],[-.50,.30],[.10,.82],[1,.48], 150, r, .014);
+      addBezier(pts, [-.34,.43],[-.18,.34],[.10,.34],[.28,.43], 40, r, .009);
+      addPolyline(pts, [[-.04,.37],[-.04,.02],[.10,.32]], 34, r, .008);
+    }else if(v===1){ // 举杯邀月：酒盏、山影与流光
+      addBezier(pts, [-.30,-.28],[-.24,.02],[.24,.02],[.30,-.28], 104, r, .01);
+      addPolyline(pts, [[0,.02],[0,.34],[-.18,.44],[.18,.44],[0,.34]], 74, r, .008);
+      addBezier(pts, [-.24,-.20],[-.06,-.10],[.08,-.10],[.24,-.20], 42, r, .008);
+      addRidge(pts, 108, .56, .18, r, 2.2);
+      addBezier(pts, [-.86,.64],[-.40,.46],[.20,.76],[.88,.54], 112, r, .012);
+      addArc(pts, .54,-.48,.12,.12, 0, Math.PI*2, 42, r, .006);
+    }else{ // 江畔小亭与半轮山月
+      addRidge(pts, 116, .42, .26, r, .8);
+      addPolyline(pts, [[-.46,.04],[-.20,-.16],[.06,.04],[-.46,.04]], 72, r, .008);
+      addPolyline(pts, [[-.38,.04],[-.38,.48],[-.06,.48],[-.06,.04]], 76, r, .008);
+      addBezier(pts, [-.82,.62],[-.35,.36],[.20,.82],[1,.48], 142, r, .012);
+      addArc(pts, .52,-.34,.20,.20, Math.PI*.12, Math.PI*.92, 58, r, .008);
+    }
+  }else if(sceneName==='sushi'){
+    if(v===0){ // 承天寺竹柏
+      const xs=[-.46,-.24,.02,.30,.52];
+      xs.forEach((x)=>{
+        addBezier(pts, [x,.68],[x-.04,.28],[x+.05,-.20],[x+.02,-.72], 52, r, .008);
+        for(let n=0;n<3;n++){
+          const yy=.36-n*.34;
+          addPolyline(pts, [[x-.055,yy],[x+.055,yy]], 8, r, .004);
+        }
+        addBezier(pts, [x,.04],[x-.20,-.06],[x-.30,-.16],[x-.42,-.12], 22, r, .01);
+        addBezier(pts, [x,-.26],[x+.16,-.34],[x+.30,-.42],[x+.43,-.36], 24, r, .01);
+      });
+      addBezier(pts, [-.72,.68],[-.30,.58],[.26,.76],[.76,.64], 66, r, .01);
+    }else if(v===1){ // 庭下积水空明：月门、池影、踏石
+      addArc(pts, 0,-.02,.50,.50, Math.PI*.08, Math.PI*.92, 126, r, .008);
+      addArc(pts, 0,.42,.62,.22, 0, Math.PI*2, 116, r, .008);
+      [-.32,0,.32].forEach((x,k)=>addArc(pts, x,.40+(k%2)*.08,.10,.035, 0, Math.PI*2, 34, r, .006));
+      addBezier(pts, [-.64,.18],[-.40,.02],[-.28,-.12],[-.12,-.06], 52, r, .01);
+      addBezier(pts, [.64,.10],[.42,-.02],[.28,-.16],[.10,-.10], 52, r, .01);
+    }else{ // 柏影横窗
+      addBezier(pts, [-.56,.66],[-.50,.20],[-.40,-.20],[-.34,-.68], 84, r, .01);
+      for(let k=0;k<5;k++){
+        const y=.36-k*.24, dir=k%2?1:-1;
+        addBezier(pts, [-.42,y],[-.12,y-.08*dir],[.18,y-.16*dir],[.52,y-.10*dir], 46, r, .012);
+      }
+      addPolyline(pts, [[-.80,.68],[.80,.68]], 70, r, .006);
+      addArc(pts, .28,-.38,.22,.22, Math.PI*.15, Math.PI*1.1, 58, r, .008);
+    }
+  }
+  return pts;
+}
+function layoutInkPoints(norm, slotIdx){
+  const slot=INK_SLOTS[slotIdx];
+  const cx=slot.x*ink.w, cy=slot.y*ink.h;
+  const sx=slot.rx*ink.w*.72, sy=slot.ry*ink.h*.64;
+  const towardCenter = cx<ink.w/2 ? 1 : -1;
+  ink.backdrop={cx,cy,rx:slot.rx*ink.w*1.08,ry:slot.ry*ink.h*1.08};
+  return norm.map(p=>({x:cx+p.x*sx*towardCenter, y:cy+p.y*sy}));
+}
+function makeInkParticle(x,y){
+  return {
+    x,y,vx:(Math.random()-.5)*24,vy:(Math.random()-.5)*24,
+    tx:0,ty:0,a:0,baseA:.42+Math.random()*.42,
+    sz:7+Math.random()*8,tw:Math.random()*Math.PI*2,
+    delay:0,threshold:Math.random(),fadeDelay:Math.random()*.22,
+    driftX:0,driftY:0,trail:Math.random()<.16,
+    sprite:inkSprites[Math.random()<.16?1:(Math.random()<.08?2:0)],
+  };
+}
+function adoptInkTargets(){
+  const pts=ink.pending||[];
+  if(!pts.length) return;
+  if(ink.nextBackdrop){ ink.backdrop=ink.nextBackdrop; ink.nextBackdrop=null; }
+  const firstGather = ink.particles.length===0;
+  const b = ink.backdrop || {cx:ink.w*.7,cy:ink.h*.62,rx:260,ry:180};
+  while(ink.particles.length<pts.length){
+    ink.particles.push(makeInkParticle(
+      b.cx+(Math.random()-.5)*b.rx*(firstGather?1.35:.55),
+      b.cy+(Math.random()-.5)*b.ry*(firstGather?1.35:.55)
+    ));
+  }
+  if(ink.particles.length>pts.length) ink.particles.length=pts.length;
+  for(let i=0;i<pts.length;i++){
+    const p=ink.particles[i];
+    p.tx=pts[i].x; p.ty=pts[i].y;
+    p.delay=.04+Math.random()*.68;
+    p.threshold=Math.random();
+  }
+  ink.slot=ink.pendingSlot;
+  ink.shapeIdx=ink.pendingShape;
+  ink.key=`${ink.scene}:${ink.slot}:${ink.shapeIdx}`;
+  ink.mode='gather'; ink.timer=0;
+}
+function scoreInkSlots(probes){
+  const spotLeft = spotEl.classList.contains('show') || performance.now()-spotLastShown<500;
+  return INK_SLOTS.map((s)=>{
+    const cx=s.x*ink.w, cy=s.y*ink.h, rx=s.rx*ink.w, ry=s.ry*ink.h;
+    let cur=0, future=0;
+    for(const p of probes||[]){
+      const nx=(p.x-cx)/rx, ny=(p.y-cy)/ry;
+      const g=Math.exp(-(nx*nx+ny*ny)*.68);
+      if(g<.012) continue;
+      if(p.op>.04) cur += p.op*g;
+      if(p.d>18 && p.d<150) future += (1-p.d/150)*g*.9;
+    }
+    if(spotLeft && cx<ink.w/2) cur += 1.5;
+    return {cur,future,total:cur*1.45+future};
+  });
+}
+function pickInkSlot(metrics, avoid){
+  let best=0, bestScore=1e9;
+  for(let i=0;i<metrics.length;i++){
+    let score=metrics[i].total;
+    if(i===avoid) score+=.42;
+    if(i===ink.lastSlot && i!==avoid) score+=.16;
+    if(score<bestScore){ bestScore=score; best=i; }
+  }
+  return best;
+}
+function startInkDissolve(nextSlot,nextShape){
+  ink.lastSlot=ink.slot;
+  ink.pendingSlot=nextSlot;
+  ink.pendingShape=nextShape;
+  const oldBackdrop=ink.backdrop?{...ink.backdrop}:null;
+  ink.pending=layoutInkPoints(buildInkShape(activeScene,nextShape), nextSlot);
+  ink.nextBackdrop=ink.backdrop;      // 新衬底暂存，待旧粒子散尽后再切换
+  ink.backdrop=oldBackdrop;           // 消散期间衬底与漂移中心仍留在旧留白处
+  ink.mode='dissolve'; ink.timer=0;
+  const b=oldBackdrop||{cx:ink.w/2,cy:ink.h/2};
+  for(const p of ink.particles){
+    const away=Math.atan2(p.y-b.cy,p.x-b.cx)+(Math.random()-.5)*1.15;
+    const sp=16+Math.random()*58;
+    p.driftX=Math.cos(away)*sp;
+    p.driftY=Math.sin(away)*sp*.55-(16+Math.random()*30);
+    p.threshold=Math.random();
+    p.fadeDelay=Math.random()*.22;
+  }
+}
+function clearInk(){
+  ink.visible=false; ink.key=null; ink.mode='idle'; ink.particles=[];
+  ink.slot=-1; ink.pendingSlot=-1; ink.lastSlot=-1; ink.scene=null;
+  ink.backdrop=null; ink.nextBackdrop=null;
+  inkCanvas.classList.remove('on');
+  inkCtx.clearRect(0,0,ink.w,ink.h);
+}
+function updateInkFocus(idx, probes){
+  const eligible = state.landed && state.mode==='poem' && activeScene!=='cosmos' && ink.w>=820;
+  if(!eligible){ if(ink.visible) clearInk(); return; }
+  if(ink.scene!==activeScene){
+    clearInk();
+    ink.scene=activeScene;
+    ink.shapeIdx=Math.max(0,idx);
+  }
+  const metrics=scoreInkSlots(probes);
+  if(!ink.visible || !ink.particles.length || ink.slot<0){
+    const slot=pickInkSlot(metrics,-1);
+    ink.pendingSlot=slot;
+    ink.pendingShape=ink.shapeIdx;
+    ink.pending=layoutInkPoints(buildInkShape(activeScene, ink.shapeIdx), slot);
+    ink.visible=true;
+    inkCanvas.classList.add('on');
+    adoptInkTargets();
+    return;
+  }
+  if(ink.mode==='dissolve') return;
+  const current=metrics[ink.slot];
+  const threatened = current.future>.32 || current.cur>.58;
+  if(threatened){
+    const nextSlot=pickInkSlot(metrics, ink.slot);
+    startInkDissolve(nextSlot, ink.shapeIdx+1);
+    return;
+  }
+  // 长久未被文字惊扰时，也缓缓散作光点、在另一处留白聚成下一幅意象，
+  // 避免同一幅插画久驻原地（聚散皆以回忆光点般的慢节奏进行）
+  if(ink.mode==='gather' && ink.timer>28){
+    const nextSlot=pickInkSlot(metrics, ink.slot);
+    startInkDissolve(nextSlot, ink.shapeIdx+1);
+  }
+}
+function tickInk(dt,t){
+  if(!ink.visible) return;
+  const ctx=inkCtx;
+  ctx.clearRect(0,0,ink.w,ink.h);
+  let dissolveP=0;
+  if(ink.mode==='dissolve'){
+    ink.timer+=dt;
+    dissolveP=clamp(ink.timer/ink.dissolveDur,0,1);
+    if(ink.timer>=ink.dissolveDur) adoptInkTargets();
+  }else if(ink.mode==='gather'){
+    ink.timer+=dt;
+  }
+  ctx.save();
+  if(ink.backdrop){
+    const b=ink.backdrop;
+    const backA = ink.mode==='dissolve' ? .20*(1-dissolveP) : .20*smooth01(ink.timer/1.2);
+    const g=ctx.createRadialGradient(b.cx,b.cy,0,b.cx,b.cy,Math.max(b.rx,b.ry));
+    g.addColorStop(0,`rgba(2,4,10,${backA})`);
+    g.addColorStop(.62,`rgba(2,4,10,${backA*.45})`);
+    g.addColorStop(1,'rgba(2,4,10,0)');
+    ctx.fillStyle=g;
+    ctx.fillRect(b.cx-b.rx,b.cy-b.ry,b.rx*2,b.ry*2);
+  }
+  ctx.globalCompositeOperation='lighter';
+  for(const p of ink.particles){
+    if(p.delay>0){ p.delay-=dt; continue; }
+    const ox=p.x, oy=p.y;
+    if(ink.mode==='gather'){
+      p.vx += (p.tx-p.x)*18*dt;
+      p.vy += (p.ty-p.y)*18*dt;
+      const damp=Math.pow(.82,dt*60);
+      p.vx*=damp; p.vy*=damp;
+      p.x += p.vx*dt + Math.sin(t*1.1+p.tw)*.10;
+      p.y += p.vy*dt + Math.cos(t*.9+p.tw)*.08;
+      const appear=smooth01((ink.timer-p.threshold*.55)/1.15);
+      const targetA=p.baseA*appear*(.68+.32*Math.sin(t*1.8+p.tw));
+      p.a=lerp(p.a,targetA,Math.min(1,dt*3.1));
+    }else{
+      const local=smooth01((dissolveP*1.28-p.threshold*.38-p.fadeDelay)/.72);
+      p.vx=lerp(p.vx,p.driftX,Math.min(1,dt*1.7));
+      p.vy=lerp(p.vy,p.driftY,Math.min(1,dt*1.7));
+      p.x += (p.vx+Math.sin(t*.8+p.tw)*10)*dt*local;
+      p.y += (p.vy+Math.cos(t*.7+p.tw)*7)*dt*local;
+      const targetA=p.baseA*Math.pow(1-local,1.55)*(.58+.42*Math.sin(t*2.0+p.tw));
+      p.a=lerp(p.a,targetA,Math.min(1,dt*4.4));
+      if(p.trail && p.a>.04){
+        ctx.globalCompositeOperation='lighter';
+        ctx.globalAlpha=clamp(p.a*.18,0,1);
+        ctx.strokeStyle='rgba(246,242,230,.55)';
+        ctx.lineWidth=.7;
+        ctx.beginPath();
+        ctx.moveTo(ox-p.vx*.055,oy-p.vy*.055);
+        ctx.lineTo(p.x,p.y);
+        ctx.stroke();
+      }
+    }
+    if(p.a<.01) continue;
+    const s=p.sz*(1+.16*Math.sin(t*2.1+p.tw));
+    ctx.globalCompositeOperation='source-over';
+    ctx.globalAlpha=clamp(p.a*.58,0,1);
+    ctx.fillStyle='#02040a';
+    ctx.fillRect(p.x-1.05,p.y-1.05,2.1,2.1);
+    ctx.globalCompositeOperation='lighter';
+    ctx.globalAlpha=clamp(p.a,0,1);
+    ctx.drawImage(p.sprite, p.x-s/2, p.y-s/2, s, s);
+  }
+  ctx.restore();
+  ctx.globalAlpha=1;
+}
+/* ---------------- 着陆页：点击月亮 · 月亮飞远 · 进入时间长河 ---------------- */
+const landing = { phase:'idle', start:0, u:0 }; // idle → anim → done
+const raycaster = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+let moonHoverT = 0, moonHover = 0;
+function moonHit(ev){
+  ndc.set(ev.clientX/innerWidth*2-1, -(ev.clientY/innerHeight)*2+1);
+  raycaster.setFromCamera(ndc, camera);
+  return raycaster.intersectObject(moon, false).length>0;
+}
+/* ---------------- 着陆页：鼠标拂过月面 → 阴影（月相）+ 农历日期/月相名 ---------------- */
+const LUNAR_DATES=['初一','初二','初三','初四','初五','初六','初七','初八','初九','初十',
+  '十一','十二','十三','十四','十五','十六','十七','十八','十九','二十',
+  '廿一','廿二','廿三','廿四','廿五','廿六','廿七','廿八','廿九','三十'];
+function lunarDayFromTheta(th){ // θ≥0 渐盈（右亮），θ<0 渐亏（左亮）
+  const d = th>=0 ? 15 - th/180*14 : 15 + (-th)/180*14;
+  return Math.min(30, Math.max(1, Math.round(d)));
+}
+function lunarPhaseName(day){
+  if(day<=1) return '新月 · 朔';
+  if(day<=6) return '蛾眉月';
+  if(day<=8) return '上弦月';
+  if(day<=13) return '盈凸月';
+  if(day<=16) return '满月 · 望';
+  if(day<=21) return '亏凸月';
+  if(day<=24) return '下弦月';
+  if(day<=28) return '残月';
+  return '晦月';
+}
+const lunarLabel=document.getElementById('lunarLabel');
+let shadowMode=false, shadowTheta=0, shadowThetaT=0;
+function moonScreen(){ // 月心屏幕坐标与屏幕半径
+  const c=moonGroup.position.clone().project(camera);
+  const r=moonGroup.position.clone().add(new THREE.Vector3(MOON_R*moonGroup.scale.x,0,0)).project(camera);
+  const cx=(c.x+1)/2*innerWidth, cy=(-c.y+1)/2*innerHeight;
+  const rx=(r.x+1)/2*innerWidth;
+  return {cx,cy,R:Math.abs(rx-cx)};
+}
+function updateMoonShadow(px,py){ // 指针/手指拂过月面 → 阴影与农历标签跟随
+  const {cx,cy,R}=moonScreen();
+  const dx=px-cx, dy=py-cy;
+  if(Math.hypot(dx,dy)<=R*1.3){ // 在月面（含微微外沿）→ 阴影跟随
+    shadowMode=true;
+    shadowThetaT = Math.max(-178, Math.min(178, dx/R*178));
+    const day=lunarDayFromTheta(shadowThetaT);
+    lunarLabel.querySelector('.ll-date').textContent=LUNAR_DATES[day-1];
+    lunarLabel.querySelector('.ll-phase').textContent=lunarPhaseName(day);
+    lunarLabel.style.left=Math.min(cx+R+72, innerWidth-96)+'px';
+    lunarLabel.style.top=cy+'px';
+    lunarLabel.classList.add('show');
+  }else{
+    shadowMode=false;
+    lunarLabel.classList.remove('show');
+  }
+}
+renderer.domElement.addEventListener('pointermove', ev=>{
+  if(landing.phase!=='idle'){ shadowMode=false; lunarLabel.classList.remove('show'); return; }
+  if(ev.pointerType && ev.pointerType!=='mouse') return; // 触摸走下方「抚月」手势
+  updateMoonShadow(ev.clientX, ev.clientY);
+});
+renderer.domElement.addEventListener('pointerleave', ()=>{ shadowMode=false; lunarLabel.classList.remove('show'); });
+
+/* 触摸端「抚月」：手指按住月面滑动 = 变幻月相；轻点（未滑动的短触）= 进入时间长河 */
+const touchMoon={active:false,moved:false,id:-1,sx:0,sy:0,t0:0};
+let touchLabelTimer=null, lastTouchMoonEnd=0;
+renderer.domElement.addEventListener('pointerdown', ev=>{
+  if(landing.phase!=='idle' || !ev.pointerType || ev.pointerType==='mouse') return;
+  if(!moonHit(ev)) return;
+  touchMoon.active=true; touchMoon.moved=false; touchMoon.id=ev.pointerId;
+  touchMoon.sx=ev.clientX; touchMoon.sy=ev.clientY; touchMoon.t0=performance.now();
+  clearTimeout(touchLabelTimer);
+  updateMoonShadow(ev.clientX,ev.clientY);
+},{passive:true});
+renderer.domElement.addEventListener('pointermove', ev=>{
+  if(!touchMoon.active || ev.pointerId!==touchMoon.id) return;
+  if(Math.hypot(ev.clientX-touchMoon.sx, ev.clientY-touchMoon.sy)>14) touchMoon.moved=true;
+  if(landing.phase==='idle') updateMoonShadow(ev.clientX,ev.clientY);
+},{passive:true});
+function endTouchMoon(cancel){
+  if(!touchMoon.active) return;
+  touchMoon.active=false;
+  lastTouchMoonEnd=performance.now();
+  const quick=performance.now()-touchMoon.t0<600;
+  if(!cancel && !touchMoon.moved && quick && landing.phase==='idle'){ startLanding(); return; } // 轻点 → 进入
+  shadowMode=false; // 抚月结束：月相柔回满月，标签停留片刻再隐去
+  clearTimeout(touchLabelTimer);
+  touchLabelTimer=setTimeout(()=>lunarLabel.classList.remove('show'),1300);
+}
+renderer.domElement.addEventListener('pointerup', ev=>{
+  if(ev.pointerType && ev.pointerType!=='mouse') endTouchMoon(false);
+});
+renderer.domElement.addEventListener('pointercancel', ev=>{
+  if(ev.pointerType && ev.pointerType!=='mouse') endTouchMoon(true);
+});
+
+/* ---------------- 定制鼠标指针：月亮点 + 柔光环 + 点击涟漪 ---------------- */
+const cursorDot=document.getElementById('cursorDot'), cursorRing=document.getElementById('cursorRing');
+const cur={x:innerWidth/2,y:innerHeight/2,dx:0,dy:0,rx:0,ry:0,seen:false};
+window.addEventListener('pointermove', ev=>{
+  if(ev.pointerType && ev.pointerType!=='mouse') return;
+  cur.x=ev.clientX; cur.y=ev.clientY;
+  if(!cur.seen){ cur.seen=true; cur.dx=cur.rx=cur.x; cur.dy=cur.ry=cur.y;
+    cursorDot.style.opacity=1; cursorRing.style.opacity=1; }
+  const hovering = !!ev.target.closest('button,.entry,.chip') || (landing.phase==='idle' && moonHoverT>0);
+  cursorRing.classList.toggle('hovering', hovering);
+});
+window.addEventListener('pointerdown', ev=>{
+  if(ev.pointerType && ev.pointerType!=='mouse') return;
+  const rip=document.createElement('div');
+  rip.className='cursor-ripple';
+  const s=56;
+  rip.style.width=rip.style.height=s+'px';
+  rip.style.left=ev.clientX+'px'; rip.style.top=ev.clientY+'px';
+  document.body.appendChild(rip);
+  setTimeout(()=>rip.remove(), 700);
+});
+document.documentElement.addEventListener('pointerleave', ()=>{
+  cursorDot.style.opacity=0; cursorRing.style.opacity=0; cur.seen=false;
+});
+function tickCursor(dt){
+  if(!cur.seen) return;
+  const k1=Math.min(1,dt*22), k2=Math.min(1,dt*7.5); // 点快、环慢 → 呼吸拖尾
+  cur.dx=lerp(cur.dx,cur.x,k1); cur.dy=lerp(cur.dy,cur.y,k1);
+  cur.rx=lerp(cur.rx,cur.x,k2); cur.ry=lerp(cur.ry,cur.y,k2);
+  cursorDot.style.transform=`translate(${cur.dx}px,${cur.dy}px)`;
+  cursorRing.style.transform=`translate(${cur.rx}px,${cur.ry}px)`;
+}
+renderer.domElement.addEventListener('pointermove', ev=>{
+  if(landing.phase!=='idle'){ moonHoverT=0; renderer.domElement.style.cursor=''; return; }
+  moonHoverT = moonHit(ev)?1:0;
+  renderer.domElement.style.cursor = moonHoverT? 'pointer':'';
+});
+renderer.domElement.addEventListener('click', ev=>{
+  if(landing.phase!=='idle') return;
+  if(ev.pointerType && ev.pointerType!=='mouse') return; // 触摸轻点已在 pointerup 判定
+  if(performance.now()-lastTouchMoonEnd<800) return;     // 抚月/触摸刚结束的合成 click 不再重复触发
+  if(moonHit(ev)) startLanding();
+});
+function startLanding(){
+  landing.phase='anim';
+  landing.start=performance.now();
+  renderer.domElement.style.cursor='';
+  moonHoverT=0;
+  shadowMode=false; lunarLabel.classList.remove('show');
+}
+function finishLanding(){
+  landing.phase='done';
+  state.landed=true;
+  // 顶部 pill、chips、漂浮条目错峰 300ms 淡入
+  const seq=[modeEl, chipsEl, entriesEl];
+  seq.forEach((el,i)=>{ el.style.transitionDelay=(i*300)+'ms'; });
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    document.body.classList.remove('landing');
+    setTimeout(()=>seq.forEach(el=>{ el.style.transitionDelay=''; }), 1600);
+  }));
+  hintEl.textContent='滚动 · 溯游时间长河';
+  hintDone=false; hintEl.classList.remove('gone');
+  if(state.selected===0 && state.mode!=='world') showSpot(state.items[0]);
+}
+
+/* 月之声：无歌词月夜环境音（随机选一段循环，可换可关；默认关闭） */
+const AU_TRACKS=[
+  {f:'moon-amb-1.mp3', n:'流光'},
+  {f:'moon-amb-2.mp3', n:'风铃'},
+  {f:'moon-amb-3.mp3', n:'深空'},
+];
+const auWrap=document.getElementById('moonAudio'), auToggleBtn=document.getElementById('auToggle'),
+      auNextBtn=document.getElementById('auNext'), auLabelEl=document.getElementById('auLabel');
+const bgm=new Audio(); bgm.volume=.38; bgm.preload='none'; bgm.loop=true;
+let auOn=false, auWant=false, auIdx=-1;
+function auPlay(i){
+  auIdx=i; const tr=AU_TRACKS[i];
+  bgm.src='audio/'+tr.f;
+  bgm.play().catch(()=>{});
+  auLabelEl.textContent='正在听 · '+tr.n;
+}
+function auStart(){ auOn=true; auWrap.classList.add('on'); auPlay(Math.floor(Math.random()*AU_TRACKS.length)); }
+function auStop(){
+  auOn=false; auWrap.classList.remove('on');
+  bgm.pause();
+  auLabelEl.textContent='听听月亮的声音';
+}
+auToggleBtn.addEventListener('click', ev=>{
+  ev.stopPropagation();
+  auWant=!auWant;
+  if(auWant) auStart(); else auStop();
+});
+auNextBtn.addEventListener('click', ev=>{
+  ev.stopPropagation();
+  if(!auOn){ auWant=true; auStart(); return; }
+  auPlay((auIdx+1)%AU_TRACKS.length);
+});
+
+/* ---------------- 模式 / 专题切换（黑场 + 锁定） ---------------- */
+function transitionTo(fn){
+  if(state.locked) return;
+  state.locked=true;
+  document.body.classList.add('locked');
+  veilEl.classList.add('on');
+  setTimeout(()=>{
+    fn();
+    requestAnimationFrame(()=>{
+      veilEl.classList.remove('on');
+      setTimeout(()=>{ state.locked=false; document.body.classList.remove('locked'); },200);
+    });
+  },620);
+}
+modeEl.querySelectorAll('button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    if(state.mode===btn.dataset.mode||state.locked) return;
+    modeEl.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===btn));
+    state.mode=btn.dataset.mode;
+    document.body.dataset.mode=state.mode;
+    transitionTo(()=>{
+      chipsEl.classList.toggle('hidden', state.mode!=='poem');
+      if(state.mode!=='poem'){ state.theme='全部'; syncChips(); switchScene('cosmos'); }
+      else switchScene(THEME_SCENE[state.theme]);
+      buildFlow();
+      if(state.mode==='world'){
+        // 进入世界版：不自动选中条目，月亮保持/归回满月（θ=0），浮现开场引言
+        state.selected=-1;
+        animatePhaseTo(0);
+        showWorldIntro();
+      }else{
+        selectEntry(0,true);
+      }
+    });
+  });
+});
+const CHIP_NAMES=['全部','李白的月亮','苏轼的月亮','中秋的月亮','边关的月亮'];
+CHIP_NAMES.forEach(name=>{
+  const b=document.createElement('button');
+  b.textContent=name; b.dataset.theme=name;
+  if(name==='全部') b.classList.add('on');
+  b.addEventListener('click',()=>{
+    if(state.theme===name||state.locked||state.mode!=='poem'||!state.landed) return;
+    state.theme=name; syncChips();
+    transitionTo(()=>{
+      switchScene(THEME_SCENE[name]);
+      buildFlow();
+      selectEntry(0,true);
+    });
+  });
+  chipsEl.appendChild(b);
+});
+function syncChips(){
+  chipsEl.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.theme===state.theme));
+}
+/* ---------------- 相机 & 月球布局 & 主循环 ---------------- */
+const cam = { z:0, x:0, y:6 };
+let moonFrac = .30, moonFracTarget = .30;
+let moonSizeFrac = .21, moonSizeTarget = .21, moonFlat = 0, moonBaseBump = 3.0;
+function layout(){
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', ()=>{
+  renderer.setSize(innerWidth, innerHeight);
+  layout();
+  tsBuild();
+});
+layout();
+
+const clock = new THREE.Clock();
+function frame(){
+  requestAnimationFrame(frame);
+  const dt = Math.min(clock.getDelta(), .05);
+  const t = clock.elapsedTime;
+  const now = performance.now();
+
+  // 相机沿时间轴推进（阻尼 lerp）
+  state.camZ = lerp(state.camZ, state.camTargetZ, .06);
+  cam.z = state.camZ;
+  camera.position.set(cam.x, cam.y, cam.z);
+  camera.lookAt(cam.x, cam.y+2, cam.z-100);
+  tsSync();
+
+  // 着陆动画进度（2.4s 慢启动慢收尾）
+  if(landing.phase==='anim'){
+    landing.u = smootherstep((now - landing.start)/2400);
+    if(landing.u>=1){ landing.u=1; finishLanding(); }
+  }
+  moonHover = lerp(moonHover, moonHoverT, Math.min(1, dt*7));
+
+  // 月球布局：远处一轮月，偏上微右；随时间轴进度 p 从 100% 微微变近到 87%
+  moonFracTarget = SCENE_CFG[activeScene].moonY;
+  moonFrac = lerp(moonFrac, moonFracTarget, Math.min(1,dt*1.2));
+  moonSizeTarget = SCENE_CFG[activeScene].moonSize;
+  moonSizeFrac = lerp(moonSizeFrac, moonSizeTarget, Math.min(1,dt*1.2));
+  // 专题场景：月亮更远更高，光照压平 → 水墨工笔的平面月
+  const flatTarget = SCENE_CFG[activeScene].moonFlat ? 1 : 0;
+  moonFlat = lerp(moonFlat, flatTarget, Math.min(1,dt*1.6));
+  sun.intensity = 2.5 * lerp(1, 0.40, moonFlat);
+  moonMat.emissiveIntensity = 0.075 * lerp(1, 3.6, moonFlat);
+  moonMat.bumpScale = moonBaseBump * lerp(1, 0.35, moonFlat);
+  const pApproach = state.maxZ>0 ? clamp(state.camZ/state.maxZ, 0, 1) : 0;
+  const dist = 170 * (1 - 0.13*pApproach);
+  const halfH = Math.tan(camera.fov*Math.PI/360)*dist;
+  const halfW = halfH*camera.aspect;
+  // 尺寸按基准距离 170 计算，不随变近补偿 → 整段旅程视觉直径增大约 15%
+  const refHalfH = Math.tan(camera.fov*Math.PI/360)*170;
+  const moonXTarget = SCENE_CFG[activeScene].moonX ?? .24;
+  let sizeFrac = moonSizeFrac, xFrac = moonXTarget, yFrac = (1-2*moonFrac)*.9;
+  if(landing.phase!=='done'){ // 着陆：巨大月亮特写 → 飞远缩小到交互布局
+    const u = landing.u;
+    sizeFrac = lerp(.70, moonSizeFrac, u);
+    xFrac = lerp(0, moonXTarget, u);
+    yFrac = lerp(.03, (1-2*moonFrac)*.9, u);
+  }
+  moonGroup.position.set(
+    cam.x + halfW*xFrac,
+    cam.y + halfH*yFrac,
+    cam.z - dist
+  );
+  const maxFracByW = 0.88*halfW/refHalfH;  // 窄屏（竖屏手机）按宽度收束，月亮不溢出画面
+  const wantH = Math.min(sizeFrac, maxFracByW)*2*refHalfH;
+  const s = wantH/(2*MOON_R);
+  moonGroup.scale.setScalar(s);
+  // 极慢自转
+  moon.rotation.y += dt*0.01;
+
+  // 月相
+  if(shadowMode){ // 着陆页：阴影跟随指针拂过月面
+    phase.theta = lerp(phase.theta, shadowThetaT, Math.min(1, dt*14));
+  }else if(landing.phase!=='done' && Math.abs(phase.theta)>0.01){ // 离开月面/起飞 → 柔回满月
+    phase.theta = lerp(phase.theta, 0, Math.min(1, dt*3));
+  }
+  tickCursor(dt);
+  tickPhase(now);
+  litRatio = applySun();
+  // 着陆页 hover：光晕微微增强
+  if(moonHover>0.001) glowMat.opacity = Math.min(1, glowMat.opacity*(1+moonHover*.35));
+
+  // 星河
+  starUniforms.uTime.value = t;
+  starGroup.position.z = cam.z*(0.55 + 0.45*Math.min(1,Math.max(0,(cam.z-800)/1600))); // 近处视差，深处渐变为跟随相机，星壳不再落到身后
+  starGroup.rotation.z = t*0.002;          // 极慢微旋转
+  starGroup.position.y = Math.sin(t*.05)*2;
+  // 银河雾带极慢漂移
+  for(let i=0;i<milkySprites.length;i++){
+    const sp=milkySprites[i];
+    sp.position.x = sp.userData.x0 + Math.cos(t*0.007+sp.userData.ph)*10;
+    sp.position.y = sp.userData.y0 + Math.sin(t*0.010+sp.userData.ph)*6;
+  }
+
+  tickMeteors(dt, now);
+  tickDesert(t);
+  tickSushi(t);
+  tickFog(dt);
+  tickInk(dt,t);
+
+  // 水面 uniform
+  seaUniforms.uTime.value=t;
+  seaUniforms.uMoonX.value=moonGroup.position.x;
+  seaUniforms.uLit.value=litRatio;
+  seaUniforms.uFogColor.value.copy(scene.fog.color);
+  riverUniforms.uTime.value=t;
+  riverUniforms.uMoonX.value=moonGroup.position.x;
+  riverUniforms.uLit.value=litRatio;
+  riverUniforms.uFogColor.value.copy(scene.fog.color);
+
+  projectEntries(t);
+  renderer.render(scene, camera);
+}
+
+/* ---------------- 启动 ---------------- */
+buildFlow();
+selectEntry(0, true);
+// 初始 spot 在页面加载完成时立即浮现
+setTimeout(()=>{ if(state.selected===0 && state.landed && state.mode!=='world') showSpot(state.items[0]); }, 600);
+frame();
+</script>
+</body>
+</html>
