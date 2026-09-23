@@ -821,7 +821,7 @@ import * as THREE from 'three';
    ============================================================ */
 
 /* ---------------- 数据 ---------------- */
-const PHASE_ANGLE = { full:0, crescent:130, waning:-130, half:80, 'half-waning':-80, new:180 };
+const PHASE_ANGLE = { full:0, crescent:130, waning:-130, half:80, 'first-quarter':90, 'half-waning':-80, new:180 };
 
 const POEMS = [
  {t:'月出皎兮，佼人僚兮。舒窈纠兮，劳心悄兮。', a:'佚名', s:'诗经·陈风·月出', d:'先秦', themes:['月出'], phase:'full'},
@@ -829,7 +829,7 @@ const POEMS = [
  {t:'日月之行，若出其中。星汉灿烂，若出其里。', a:'曹操', s:'观沧海', d:'汉', themes:['月出'], phase:'full'},
  {t:'春江潮水连海平，海上明月共潮生。', a:'张若虚', s:'春江花月夜', d:'唐', themes:['月出'], phase:'full'},
  {t:'海上生明月，天涯共此时。情人怨遥夜，竟夕起相思。', a:'张九龄', s:'望月怀远', d:'唐', themes:['中秋的月亮'], phase:'full'},
- {t:'峨眉山月半轮秋，影入平羌江水流。', a:'李白', s:'峨眉山月歌', d:'唐', themes:['李白的月亮'], phase:'half'},
+ {t:'峨眉山月半轮秋，影入平羌江水流。', a:'李白', s:'峨眉山月歌', d:'唐', themes:['李白的月亮'], phase:'first-quarter'},
  {t:'床前明月光，疑是地上霜。举头望明月，低头思故乡。', a:'李白', s:'静夜思', d:'唐', themes:['李白的月亮'], phase:'full'},
  {t:'小时不识月，呼作白玉盘。又疑瑶台镜，飞在青云端。', a:'李白', s:'古朗月行', d:'唐', themes:['李白的月亮'], phase:'full'},
  {t:'花间一壶酒，独酌无相亲。举杯邀明月，对影成三人。', a:'李白', s:'月下独酌·其一', d:'唐', themes:['李白的月亮'], phase:'full'},
@@ -965,7 +965,7 @@ const SONGS = [
  {t:'秋夜满院星辰，月影朦胧夜凉，守望在门前的老人，他怀想曾少年', a:'夏小桐', s:'少年弦', y:2018, cr:'夏小桐 词曲', phase:'full'},
  {t:'只有月亮看得到，只有月亮她知道，你的好，我的好，只有月亮听得到，我在小白船上遗忘的民谣，飘呀飘。', a:'岑宁儿', s:'月亮见', y:2018, cr:'岑宁儿 词曲', phase:'full'},
  {t:'月亮才把故乡，挂天上。', a:'周笔畅', s:'离人的月亮', y:2019, cr:'唐恬 词 · 邓智伟 曲', phase:'full'},
- {t:'风清月皎，上弦的夜，天空在微笑，还不想睡着，在月光怀抱，再多停留几秒', a:'王诗安', s:'月', y:2019, cr:'崔惟楷 词 · 王诗安 曲', phase:'half'},
+ {t:'风清月皎，上弦的夜，天空在微笑，还不想睡着，在月光怀抱，再多停留几秒', a:'王诗安', s:'月', y:2019, cr:'崔惟楷 词 · 王诗安 曲', phase:'first-quarter'},
  {t:'是绝望带来了希望，黑暗的另一端，是月亮，是我。', a:'吴青峰', s:'月亮河', y:2020, phase:'full'},
  {t:'晚安了，你的眼睛，升起月亮，梦入天际', a:'房东的猫·陆宇鹏', s:'月亮鲸鱼', y:2020, cr:'苟璘 词 · 方珲 曲', phase:'full'},
  {t:'夜和自由深情相望，看那片云吻着月亮，蓝色的梦，Flying with the flow,，掉落在银河烂漫的夜。', a:'袁娅维', s:'月亮忘了（KISMET）', y:2021, cr:'袁娅维、邓杰 词曲', phase:'full'},
@@ -1236,7 +1236,7 @@ const moonMat = new THREE.MeshStandardMaterial({
   map: moonTex.albedo, bumpMap: moonTex.bump, bumpScale: 3.0,
   roughness: 1.0, metalness: 0.0,
   color: 0xf8f8f2, // 近纯白微暖，绝不偏黄
-  emissive: 0xf2f2ea, emissiveMap: moonTex.albedo, emissiveIntensity: 0.075, // 更亮更柔和，满月莹润
+  emissive: 0xf2f2ea, emissiveMap: moonTex.albedo, emissiveIntensity: 0.0825, // 更亮更柔和，满月莹润
 });
 // 真实月球贴图（NASA SVS CGI Moon Kit，已下载到本地 ./textures/）；
 // 任意一张加载失败则保留程序化纹理兜底
@@ -1301,7 +1301,7 @@ moonGroup.add(glow);
 scene.add(moonGroup);
 
 // 月相 = 一盏平行光绕月球转动（θ=0 相机背后 = 满月）
-const sun = new THREE.DirectionalLight(0xfffaf2, 2.5); // 白而柔和的光
+const sun = new THREE.DirectionalLight(0xfffaf2, 2.75); // 白而柔和的光
 const sunTarget = new THREE.Object3D();
 scene.add(sun, sunTarget);
 sun.target = sunTarget;
@@ -1321,7 +1321,7 @@ function applySun(){
   groundSun.position.copy(moonGroup.position).addScaledVector(dir, 140);
   groundSun.target.position.copy(moonGroup.position);
   const lit = (1+Math.cos(t))/2;
-  glowMat.opacity = 0.08 + 0.66*lit;      // 满月柔光清晰可见，随月相衰减（新月几乎熄灭）
+  glowMat.opacity = (0.08 + 0.66*lit) * 1.1;      // 满月柔光清晰可见，随月相衰减（新月几乎熄灭）
   ambient.intensity = (0.34 + 0.3*lit) * (1 + 2.2*moonFlat);   // 地照：暗面隐约可见；专题平面化时提亮压平
   groundSun.intensity = 0.45 + 1.0*lit;
   return lit;
@@ -2164,7 +2164,7 @@ function nbmMoon(ctx,x,y,r,phase,pal){
   const off=nbmMoon.off; off.width=off.height=S;
   const c2=off.getContext('2d');
   const img=c2.createImageData(S,S), d=img.data;
-  const hi=hexRGB(pal.moonHi), sh=hexRGB(pal.moonSh);
+  const hi0=hexRGB(pal.moonHi), sh0=hexRGB(pal.moonSh); const hi=hi0.map(v=>Math.min(255,Math.round(v*1.1))), sh=sh0.map(v=>Math.min(255,Math.round(v*1.1)));
   const half=S/2;
   for(let py=0;py<S;py++) for(let px=0;px<S;px++){
     const nx=(px+.5-half)/half, ny=(py+.5-half)/half, rr=nx*nx+ny*ny;
@@ -3371,7 +3371,7 @@ function frame(){
   const flatTarget = SCENE_CFG[activeScene].moonFlat ? 1 : 0;
   moonFlat = lerp(moonFlat, flatTarget, Math.min(1,dt*1.6));
   sun.intensity = 2.5 * lerp(1, 0.40, moonFlat);
-  moonMat.emissiveIntensity = 0.075 * lerp(1, 3.6, moonFlat);
+  moonMat.emissiveIntensity = 0.0825 * lerp(1, 3.6, moonFlat);
   moonMat.bumpScale = moonBaseBump * lerp(1, 0.35, moonFlat);
   const pApproach = state.maxZ>0 ? clamp(state.camZ/state.maxZ, 0, 1) : 0;
   const dist = 170 * (1 - 0.13*pApproach);
