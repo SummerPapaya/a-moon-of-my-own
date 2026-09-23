@@ -234,6 +234,65 @@ body[data-mode="world"] .spot-verse .trans,body[data-mode="river"] .spot-verse .
   color:rgba(216,201,163,.55);
 }
 .spot-verse{display:inline-block;white-space:pre-wrap;}
+/* ============ 中文诗歌/歌词 高光条：按模式分竖版 / 横版 ============
+   · 竖版：中文诗歌 / 中文歌曲  → 整块竖排（vertical-rl），诗体按句拆两列竖排
+   · 横版：时间长河 / 世界诗乐  → 整块横排（horizontal-tb），诗体保持原文排版、自然换行、不拆列
+   无论横竖，标题行(.who) 与诗体(.spot-poem*) 采用同一书写方向 → 彼此平行（既不互相垂直、也不另起一列并排），
+   标题作为「引题」置于诗体之前（同一流向的头部）。诗体单独用 .spot-poem-cols / .spot-poem-plain
+   （不复用 .spot-verse），避免被 world/river 的 .spot-verse 规则干扰。 */
+
+/* —— 竖版：中文诗歌 / 中文歌曲（标题恒在诗句「右侧」） —— */
+/* 用 flex 显式排布，不再依赖 vertical-rl 的行内换行：
+   竖排时短标题会与诗体挤进同一列，窄屏下就跑到诗句「上方」——这是 bug 根源。
+   这里把整块改成横向 flex（row-reverse），DOM 顺序是 [标题][诗体]，
+   reverse 后标题落在最右、诗体在其左；两块各自再切回竖排。 */
+body[data-mode="poem"] .spot.poem,
+body[data-mode="song"] .spot.poem{
+  writing-mode:horizontal-tb;
+  display:flex;flex-direction:row-reverse;align-items:flex-start;
+  gap:clamp(14px,1.8vw,28px);
+  max-height:none;overflow:visible;
+}
+/* 诗体：两竖列并列，第一列在右（传统竖排序） */
+body[data-mode="poem"] .spot-poem-cols,
+body[data-mode="song"] .spot-poem-cols{
+  display:flex;flex-direction:row-reverse;align-items:flex-start;
+  writing-mode:horizontal-tb;
+  gap:clamp(16px,2vw,34px);margin:0;
+  font-size:clamp(18px,2.3vw,26px);line-height:2;letter-spacing:.16em;
+}
+body[data-mode="poem"] .spot-poem-cols .spot-col,
+body[data-mode="song"] .spot-poem-cols .spot-col{ writing-mode:vertical-rl; }
+body[data-mode="poem"] .spot-poem-cols .spot-line,
+body[data-mode="song"] .spot-poem-cols .spot-line{ display:inline-block;white-space:nowrap;word-break:keep-all; }
+/* 标题：竖排，作为 flex 第二块 → 恒落在诗句右侧（与诗句平行，同为竖排） */
+body[data-mode="poem"] .spot.poem>.who,
+body[data-mode="song"] .spot.poem>.who{
+  writing-mode:vertical-rl;align-self:flex-start;
+  margin:0;white-space:nowrap;
+  font-size:clamp(11px,1.15vw,14px);letter-spacing:.32em;
+}
+
+/* —— 横版：时间长河 / 世界诗乐（保持原文排版，不拆列） —— */
+body[data-mode="river"] .spot.poem,
+body[data-mode="world"] .spot.poem{
+  writing-mode:horizontal-tb;       /* 整块横排：标题与诗体同为横版、彼此平行 */
+  max-width:min(720px,64vw);        /* 放宽宽度，避免长句被压成过窄竖条 */
+  max-height:80vh;overflow:visible; /* 抬高高度上限，避免后面文字被裁切消失 */
+  bottom:140px;
+}
+body[data-mode="river"] .spot.poem>.who,
+body[data-mode="world"] .spot.poem>.who{
+  display:block;writing-mode:horizontal-tb;margin:0 0 .6em;
+  font-size:clamp(11px,1.1vw,13.5px);letter-spacing:.18em;color:rgba(216,201,163,.62);
+}
+body[data-mode="river"] .spot-poem-plain,
+body[data-mode="world"] .spot-poem-plain{
+  display:block;writing-mode:horizontal-tb;
+  white-space:normal;word-break:normal;
+  font-size:clamp(18px,2.3vw,24px);line-height:2;letter-spacing:.16em;margin:0;
+  max-height:none;overflow:visible;
+}
 
 /* ---------- 底部提示 ---------- */
 .hint{
@@ -337,6 +396,69 @@ body:not(.landing) .timeline-scrub{opacity:1;pointer-events:auto;}
   .ts-lab.v{writing-mode:vertical-rl;font-size:9px;letter-spacing:.12em;}
   .ts-year{font-size:10px;bottom:50px;}
 }
+
+/* ---------- 新手教学：溯游指南 ---------- */
+/* 高亮用「挖洞」实现：ring 的 box-shadow 铺满全屏，只有框内不被压暗 */
+.guide{position:fixed;inset:0;z-index:40;opacity:0;pointer-events:none;transition:opacity .9s ease;}
+.guide.on{opacity:1;}
+.gd-dim{position:absolute;inset:0;background:rgba(5,7,14,.46);transition:opacity .6s ease;}
+.guide[data-cut="1"] .gd-dim{opacity:0;}
+.gd-ring{
+  position:absolute;border-radius:16px;opacity:0;pointer-events:none;
+  border:1px solid rgba(226,205,150,.46);
+  box-shadow:0 0 0 9999px rgba(5,7,14,.46), 0 0 30px rgba(233,201,122,.2);
+  transition:opacity .6s ease,left .34s ease,top .34s ease,width .34s ease,height .34s ease;
+}
+.gd-ring.on{opacity:1;}
+.gd-ring::after{content:'';position:absolute;inset:-7px;border-radius:22px;border:1px solid rgba(233,201,122,.14);}
+.gd-card{
+  position:absolute;left:50%;transform:translateX(-50%);bottom:104px;
+  width:min(438px,90vw);padding:20px 24px 16px;
+  background:linear-gradient(200deg,rgba(10,13,22,.9),rgba(6,8,14,.94));
+  border:1px solid rgba(216,201,163,.18);border-radius:6px;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 26px 64px rgba(0,0,0,.55);
+  transition:bottom .7s cubic-bezier(.22,.8,.24,1);
+  pointer-events:auto;   /* .guide 整体 pointer-events:none（点空处才收起），但卡片本身要能接收点击 */
+}
+.gd-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;}
+.gd-eyebrow{font-family:var(--kai);font-size:11px;letter-spacing:.34em;color:rgba(216,201,163,.5);}
+.gd-dots{display:flex;gap:6px;}
+.gd-dots i{width:5px;height:5px;border-radius:50%;background:rgba(216,201,163,.2);transition:background .5s,box-shadow .5s;}
+.gd-dots i.on{background:#e2cd96;box-shadow:0 0 8px rgba(233,201,122,.7);}
+.gd-title{font-family:var(--kai);font-size:19px;letter-spacing:.2em;color:rgba(243,233,207,.94);}
+.gd-body{margin-top:10px;font-family:var(--kai);font-size:13.5px;line-height:2.05;letter-spacing:.08em;color:rgba(244,240,234,.66);}
+.gd-bar{margin-top:16px;height:1px;background:rgba(216,201,163,.14);overflow:hidden;}
+.gd-bar i{display:block;height:1px;width:0;background:linear-gradient(90deg,rgba(233,201,122,.2),rgba(233,201,122,.78));transition:width .6s cubic-bezier(.22,.8,.24,1);}
+.gd-nav{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.gd-nav button{
+  font-family:var(--kai);font-size:12px;letter-spacing:.2em;color:rgba(216,201,163,.7);
+  background:none;border:1px solid rgba(216,201,163,.22);border-radius:999px;padding:6px 15px;cursor:pointer;
+  transition:color .4s,border-color .4s,background .4s,opacity .4s;
+}
+.gd-nav button:hover{color:rgba(243,233,207,.96);border-color:rgba(216,201,163,.5);}
+.gd-skip{border-color:transparent !important;color:rgba(244,240,234,.34);padding-left:2px !important;padding-right:2px !important;}
+.gd-skip:hover{color:rgba(244,240,234,.7);}
+.gd-arrows{display:flex;gap:8px;}
+.gd-prev[disabled]{opacity:.28;pointer-events:none;}
+.gd-next{color:rgba(243,233,207,.92) !important;background:rgba(216,201,163,.1);border-color:rgba(216,201,163,.34) !important;}
+@media (max-width:768px){
+  .gd-card{bottom:86px;width:calc(100vw - 30px);padding:16px 18px 13px;}
+  .gd-title{font-size:17px;}
+  .gd-body{font-size:12.5px;line-height:1.95;}
+  .gd-nav button{font-size:11px;padding:5px 12px;}
+}
+/* 右上角「？」：随时再看一遍指南 */
+.guide-btn{
+  position:fixed;z-index:9;right:24px;top:26px;width:32px;height:32px;border-radius:50%;
+  font-family:var(--kai);font-size:14px;line-height:1;padding-bottom:2px;
+  color:rgba(216,201,163,.6);background:rgba(10,14,24,.42);
+  border:1px solid rgba(216,201,163,.22);cursor:pointer;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  transition:opacity 1.2s ease,color .4s,border-color .4s;
+}
+.guide-btn:hover{color:rgba(243,233,207,.95);border-color:rgba(216,201,163,.5);}
+body.landing .guide-btn{opacity:0 !important;pointer-events:none !important;}
 
 /* 月之声：无歌词月夜环境音 */
 .moon-audio{
@@ -662,6 +784,28 @@ body.landing .moon-audio{opacity:0 !important;pointer-events:none !important;}
     </div>
   </div>
 </div>
+<!-- 新手教学：溯游指南（首次进入浮现一次；右上角「？」可随时再看） -->
+<button class="guide-btn" id="guideBtn" aria-label="再看一遍溯游指南">?</button>
+<div class="guide" id="guide" data-cut="0" aria-hidden="true">
+  <div class="gd-dim"></div>
+  <div class="gd-ring" id="gdRing"></div>
+  <div class="gd-card" id="gdCard">
+    <div class="gd-head">
+      <span class="gd-eyebrow">溯游指南</span>
+      <span class="gd-dots" id="gdDots"></span>
+    </div>
+    <div class="gd-title" id="gdTitle"></div>
+    <div class="gd-body" id="gdBody"></div>
+    <div class="gd-bar"><i id="gdBar"></i></div>
+    <div class="gd-nav">
+      <button class="gd-skip" id="gdSkip">跳过</button>
+      <span class="gd-arrows">
+        <button class="gd-prev" id="gdPrev">上一步</button>
+        <button class="gd-next" id="gdNext">下一步</button>
+      </span>
+    </div>
+  </div>
+</div>
 <div class="veil" id="veil"></div>
 <div class="lunar-label" id="lunarLabel"><span class="ll-date"></span><span class="ll-phase"></span></div>
 <div class="cursor-dot" id="cursorDot"></div>
@@ -776,6 +920,7 @@ const SONGS = [
  {t:'遥远的夜空，有一个弯弯的月亮。弯弯的月亮下面，是那弯弯的小桥。', a:'刘欢', s:'弯弯的月亮', y:1989, cr:'李海鹰 词曲', phase:'crescent'},
  {t:'城里的月光把梦照亮，请温暖他心房。看透了人间聚散，能不能多点快乐片段。', a:'许美静', s:'城里的月光', y:1995, cr:'陈佳明 词曲', phase:'full'},
  {t:'槟榔树梢上的月亮，它很忠实地跟随我，定居到异乡。', a:'彭佳慧·民雄', s:'月亮使者', y:1998, cr:'姚谦 词', phase:'full'},
+ {t:'你是否还会记得上弦月，等它慢慢的缺 慢慢圆，圆了有情人赴今生约，缺成我最孤单的想念。', a:'许志安', s:'上弦月', y:1998, cr:'方文良 词曲', phase:'half'},
  {t:'月亮在你的眼睛，太阳在我心，现在我唱这首歌，OHH 只为你。', a:'顺子', s:'写一首歌 April 5, 1969', y:1998, cr:'顺子、Jeff C 词 · 顺子 曲', phase:'full'},
  {t:'看，当时的月亮。曾经代表谁的心，结果都一样。', a:'王菲', s:'当时的月亮', y:1999, cr:'林夕 词 · 陈辉阳 曲', phase:'full'},
  {t:'我醒来，睡在月光里。下弦月，让我想你。', a:'李玟', s:'月光爱人', y:1999, cr:'易家扬 词 · 谭盾 曲', phase:'half-waning'},
@@ -2248,9 +2393,22 @@ function showSpot(it, dur){
   spotLastShown=performance.now();
   const isW = it.orig!==undefined;
   const who = whoOf(it);
-  spotEl.innerHTML = isW
-    ? `<span class="who">${who}</span><span class="spot-verse"><span class="orig">${it.orig}</span><span class="trans">${it.trans}</span></span>`
-    : `<span class="who">${who}</span><span class="spot-verse">${it.t}</span>`;
+  const vertical = (state.mode==='poem' || state.mode==='song'); // 中文诗歌/中文歌曲=竖版；时间长河/世界诗乐=横版
+  let verseHtml;
+  spotEl.classList.toggle('poem', !isW);   // 中文诗歌/歌词：使用标题与诗体平行的专用布局
+  if(isW){
+    verseHtml = `<span class="spot-verse"><span class="orig">${it.orig}</span><span class="trans">${it.trans}</span></span>`;
+  }else if(vertical){
+    // 竖版：标题与诗体同为竖排（平行）；诗体按句拆成两列竖排，整句不拆字、末字不掉行
+    const lines = (it.t.match(/[^，。；、？！]+[，。；、？！]?/g) || [it.t]).filter(Boolean);
+    const half = Math.ceil(lines.length/2);
+    const col = arr => `<span class="spot-col">${arr.map(l=>`<span class="spot-line">${l}</span>`).join('')}</span>`;
+    verseHtml = `<span class="spot-poem spot-poem-cols">${col(lines.slice(0,half))}${col(lines.slice(half))}</span>`;
+  }else{
+    // 横版：保持原文排版，横向自然换行（句间可断、句中不断），不拆列
+    verseHtml = `<span class="spot-poem spot-poem-plain">${it.t}</span>`;
+  }
+  spotEl.innerHTML = `<span class="who">${who}</span>${verseHtml}`;
   spotEl.classList.remove('show');
   requestAnimationFrame(()=>requestAnimationFrame(()=>{ spotEl.classList.add('show'); syncCollectBtn(); }));
   spotTimer=setTimeout(()=>{ spotEl.classList.remove('show'); collectBtn.classList.remove('show'); }, dur||8000);
@@ -2259,19 +2417,20 @@ function showSpot(it, dur){
 function showWorldIntro(){
   clearTimeout(spotTimer);
   collectBtn.classList.remove('show');
+  spotEl.classList.remove('poem');
   spotEl.innerHTML=`<span class="who">无论身在何处，我们拥有同一只月亮</span><span class="spot-verse">但愿人长久\n千里共婵娟</span>`;
   spotEl.classList.remove('show');
   requestAnimationFrame(()=>requestAnimationFrame(()=>spotEl.classList.add('show')));
   spotTimer=setTimeout(()=>spotEl.classList.remove('show'), 3000);
 }
-function hideSpot(){ clearTimeout(spotTimer); spotEl.classList.remove('show'); collectBtn.classList.remove('show'); }
+function hideSpot(){ clearTimeout(spotTimer); spotEl.classList.remove('show'); spotEl.classList.remove('poem'); collectBtn.classList.remove('show'); lunarLabel.classList.remove('show'); }
 function selectEntry(i, initial){
   if((state.locked || !state.landed) && !initial) return;
   state.selected=i;
   const it=state.items[i];
   if(!it) return;
   state.entries.forEach((e,k)=>e.el.classList.toggle('active',k===i));
-  animatePhaseTo(PHASE_ANGLE[it.phase] ?? 0);
+  animatePhaseTo(PHASE_ANGLE[it.phase] ?? 0);   // 内页：月亮随选中诗句变换月相（不显示月相名称标签）
   if(state.landed && !(initial && state.mode==='world')) showSpot(it);
 }
 document.addEventListener('click',(e)=>{
@@ -2319,14 +2478,55 @@ function tsYearOf(it){
   if(isSongIt(it)) return it.y;
   return POEM_Y[it.a+'|'+it.s]??9999;
 }
+/* ---------------- 底部时间轴：年份 ↔ 相机 z 的真实映射 ----------------
+   条目在 z 轴上是「按序等距」排布的，但它们的系年并不等距：
+   中文歌曲里 1940–1977 只有 3 首，1983 年后却有 70 余首；
+   只要把年份均匀铺在轴上，刻度所指的位置就会与真实年份错开几十年。
+   所以先建立「年份 ↔ z」的分段线性映射，刻度一律落在该年份真实出现的位置。 */
+const NICE_Y=[1,2,5,10,20,25,50,100,200,250,500,1000,2000];
+let axisPts=null;
+function tsBuildAxis(){
+  const n=state.items.length, S=flowSpacing(), pts=[];
+  for(let i=0;i<n;i++){
+    const y=tsYearOf(state.items[i]);
+    if(y>=9000) continue;                  // 系年不详的条目不参与建轴
+    const z=34+i*S, last=pts[pts.length-1];
+    if(last && last.y===y) last.z1=z;      // 同一年份的多个条目并成一个锚点
+    else pts.push({y, z, z1:z});
+  }
+  pts.forEach(p=>{ p.z=(p.z+p.z1)/2; });   // 取首末中点作为该年份的代表位置
+  axisPts = pts.length>1 ? pts : null;
+}
+function tsYearAtZ(z){
+  if(!axisPts) return null;
+  const A=axisPts[0], L=axisPts[axisPts.length-1];
+  if(z<=A.z) return A.y;
+  if(z>=L.z) return L.y;
+  for(let i=0;i<axisPts.length-1;i++){
+    const a=axisPts[i], b=axisPts[i+1];
+    if(z<=b.z) return b.y===a.y ? a.y : a.y+(z-a.z)/(b.z-a.z)*(b.y-a.y);
+  }
+  return L.y;
+}
+function tsZAtYear(y){
+  if(!axisPts) return null;
+  const A=axisPts[0], L=axisPts[axisPts.length-1];
+  if(y<A.y || y>L.y) return null;
+  for(let i=0;i<axisPts.length;i++){
+    const p=axisPts[i];
+    if(p.y===y) return p.z;
+    if(p.y>y){ const a=axisPts[i-1]; return a.z+(y-a.y)/(p.y-a.y)*(p.z-a.z); }
+  }
+  return null;
+}
 /* 拨轮刻度：按当前模式的系年范围铺设。诗歌模式标朝代，其余标年份 */
 function tsBuild(){
   // 小专题时间跨度小，不铺时间轴
   tscrubEl.classList.toggle('ts-off', state.mode==='poem' && !!state.theme && state.theme!=='全部');
   tsTicksEl.innerHTML='';
+  axisPts=null;
   const n=state.items.length, span=state.maxZ-state.minZ;
   if(n<2 || span<=0){ tsYearEl.textContent=''; return; }
-  const z0=34, z1=34+(n-1)*flowSpacing();
   const frag=document.createDocumentFragment();
   const mkTick=(f,cls)=>{ if(f<-0.001||f>1.001) return; const t=document.createElement('i'); t.className='ts-tick '+cls; t.style.left=(f*100)+'%'; frag.appendChild(t); };
   const mkLab=(f,txt,cls,shift)=>{ if(f<0||f>1) return; if(innerWidth<768 && f*innerWidth>innerWidth-118) return; const s=document.createElement('b'); s.className='ts-lab'+(cls?' '+cls:''); s.style.left=(f*100)+'%'; if(shift) s.style.marginLeft=shift+'px'; s.textContent=txt; frag.appendChild(s); };
@@ -2346,26 +2546,77 @@ function tsBuild(){
       lastRight = px - lw/2 + shift + lw;
     });
   }else{
-    const ys=state.items.map(tsYearOf).filter(y=>y<9000);
-    if(ys.length){
-      const y0=Math.min.apply(null,ys), y1=Math.max.apply(null,ys);
-      const R=Math.max(1,y1-y0);
-      const steps=[1,2,5,10,20,50,100,200,500,1000,2000];
-      let step=steps[steps.length-1], best=1e9;
-      steps.forEach(s=>{ const d=Math.abs(R/s-9); if(R/s>=2.5 && d<best){ best=d; step=s; } });
-      const start=Math.ceil(y0/step)*step;
-      for(let Y=start; Y<=y1; Y+=step){
-        if(Y===0) continue; // 没有公元0年
-        const f=(z0+(Y-y0)/R*(z1-z0)-state.minZ)/span;
-        mkTick(f,'mj'); mkLab(f,tsYearText(Y));
-        if(step>=10){
-          for(let k=1;k<5;k++){
-            const Ym=Y+k*step/5;
-            if(Ym>y1 || Ym===0) continue;
-            mkTick((z0+(Ym-y0)/R*(z1-z0)-state.minZ)/span,'mn');
+    tsBuildAxis();                             // 年份型模式才需要建轴（诗歌模式标的是朝代）
+    if(axisPts){
+      const w=tscrubEl.clientWidth||innerWidth, narrow=w<768;
+      const mjGap=narrow?60:76;                 // 相邻年份标签的最小像素间距
+      const mnGap=6;                            // 细刻度的最小像素间距
+      const padL=44, padR=narrow?146:186;       // 两端留白（右下角有「拾月集」按钮）
+      const usa=Math.max(120, w-padL-padR);
+      const K=Math.max(3, Math.min(narrow?6:16, Math.round(usa/mjGap)+1));
+      const pxOf=z=>((z-state.minZ)/span)*w;
+      const stAt=z=>{                           // 该处「一年占几像素」→ 决定标签取整粒度
+        const dz=Math.max(1, span*0.02);
+        const dens=Math.abs(tsYearAtZ(z+dz)-tsYearAtZ(z-dz))/(2*dz)*(span/w);
+        return NICE_Y.find(s=>s>=dens*mjGap)||0;
+      };
+      const tryAt=(z,st)=>{                     // 按某个粒度取整，再看它落在哪儿、离取样点多远
+        const Y=Math.round(tsYearAtZ(z)/st)*st;
+        if(Y===0) return null;                  // 没有公元0年
+        const zz=tsZAtYear(Y);
+        return zz===null? null : {Y, z:zz, st, d:Math.abs(pxOf(zz)-pxOf(z))};
+      };
+      const cand=z=>{                           // 取整到顺口年份，再落到该年份的真实位置
+        const base=stAt(z); if(!base) return null;
+        const bi=NICE_Y.indexOf(base);
+        let best=tryAt(z,base);
+        // 取整后落点偏得太远（密疏反差大的区段）→ 退到更细的粒度里挑最近的一个
+        if(!best || best.d>mjGap*0.8){
+          for(let k=bi-1;k>=0 && k>=bi-4;k--){
+            const c=tryAt(z,NICE_Y[k]);
+            if(c && (!best || c.d<best.d)) best=c;
           }
         }
+        return best? {Y:best.Y, z:best.z, st:best.st} : null;
+      };
+      const place=list=>{
+        const uniq=new Map();
+        list.forEach(c=>{ if(c && !uniq.has(c.Y)) uniq.set(c.Y,c); });
+        const out=[]; let last=-1e9;
+        [...uniq.values()].sort((a,b)=>a.z-b.z).forEach(c=>{
+          const px=pxOf(c.z); if(px<-2 || px>w+2 || px-last<mjGap) return;
+          last=px; out.push({Y:c.Y, z:c.z, st:c.st, px});
+        });
+        return out;
+      };
+      const A=axisPts[0], L=axisPts[axisPts.length-1];
+      // 两端用真实系年兜底，中段按当地粒度取顺口年份
+      const list=[{Y:A.y, z:A.z, st:stAt(A.z)||2000},{Y:L.y, z:L.z, st:stAt(L.z)||10}];
+      for(let k=0;k<K;k++) list.push(cand(state.minZ+(padL+usa*(K===1?0:k/(K-1)))/w*span));
+      let placed=place(list);
+      for(let it=0; it<3; it++){                // 标签之间空得太开时，在中间再补一个
+        const extra=[];
+        for(let i=0;i<placed.length-1;i++){
+          if(placed[i+1].px-placed[i].px < mjGap*2.2) continue;
+          const c=cand((placed[i].z+placed[i+1].z)/2);
+          if(c){ extra.push(c); list.push(c); }
+        }
+        if(!extra.length) break;
+        placed=place(list);
       }
+      placed.forEach(c=>{ const f=pxOf(c.z)/w; mkTick(f,'mj'); mkLab(f,tsYearText(c.Y)); });
+      // 细刻度：主刻度之间五等分，位置同样取真实年份
+      const major=placed.map(c=>c.px);
+      const finer=[];
+      placed.forEach(c=>{ for(let k=1;k<5;k++) finer.push(c.Y+c.st*k/5); });
+      let lastT=-1e9;
+      finer.sort((a,b)=>a-b).forEach(Y=>{
+        const zz=tsZAtYear(Y); if(zz===null) return;
+        const px=pxOf(zz); if(px-lastT<mnGap) return;
+        lastT=px;
+        if(major.some(p=>Math.abs(p-px)<5)) return;
+        mkTick(px/w,'mn');
+      });
     }
   }
   tsTicksEl.appendChild(frag);
@@ -2375,10 +2626,14 @@ function tsSync(){
   const f=span>0 ? (state.camZ-state.minZ)/span : 0;
   tsDotEl.style.left=(f*100)+'%';
   if(!state.items.length){ tsYearEl.textContent=''; return; }
-  // 年份读数取最近的真实条目，跟着浏览位置走
+  // 年份读数与轴上的刻度共用同一套「年份 ↔ z」映射：圆点、刻度、读数三者始终一致
   const i=Math.min(state.items.length-1,Math.max(0,Math.round((state.camZ-34)/flowSpacing())));
   const it=state.items[i];
-  const txt = state.mode==='poem' ? (it.d||'') : tsYearText(tsYearOf(it));
+  let txt=it.d||'';
+  if(state.mode!=='poem'){
+    const y=tsYearAtZ(state.camZ);
+    txt = y===null ? tsYearText(tsYearOf(it)) : tsYearText(Math.round(y));
+  }
   if(txt!==tsYearEl.textContent) tsYearEl.textContent=txt;
   // 读数跟随圆点，钳制在两端以内（避开右下按钮区）
   const w=tscrubEl.clientWidth||innerWidth;
@@ -2979,7 +3234,9 @@ function finishLanding(){
   }));
   hintEl.textContent='滚动 · 溯游时间长河';
   hintDone=false; hintEl.classList.remove('gone');
-  if(state.selected===0 && state.mode!=='world') showSpot(state.items[0]);
+  // 进入时不自动放大任何一句：聚光只在用户点选文字时出现
+  // 首次进入：等界面淡入之后，再浮出「溯游指南」
+  if(!gdSeen()) setTimeout(()=>{ if(state.landed && !state.locked) gdOpen(); }, 1700);
 }
 
 /* 月之声：无歌词月夜环境音（随机选一段循环，可换可关；默认关闭） */
@@ -3040,13 +3297,12 @@ modeEl.querySelectorAll('button').forEach(btn=>{
       if(state.mode!=='poem'){ state.theme='全部'; syncChips(); switchScene('cosmos'); }
       else switchScene(THEME_SCENE[state.theme]);
       buildFlow();
+      // 切换页面不自动选中/放大第一句，等用户点击才算数
+      state.selected=-1; hideSpot();
       if(state.mode==='world'){
-        // 进入世界版：不自动选中条目，月亮保持/归回满月（θ=0），浮现开场引言
-        state.selected=-1;
+        // 进入世界版：月亮保持/归回满月（θ=0），浮现开场引言
         animatePhaseTo(0);
         showWorldIntro();
-      }else{
-        selectEntry(0,true);
       }
     });
   });
@@ -3062,7 +3318,7 @@ CHIP_NAMES.forEach(name=>{
     transitionTo(()=>{
       switchScene(THEME_SCENE[name]);
       buildFlow();
-      selectEntry(0,true);
+      state.selected=-1; hideSpot();   // 换专题同样不自动放大第一句
     });
   });
   chipsEl.appendChild(b);
@@ -3187,11 +3443,125 @@ function frame(){
   renderer.render(scene, camera);
 }
 
+/* ---------------- 新手教学：溯游指南 ----------------
+   进入后自动浮现一次，先讲清楚能做什么；可跳过，也可点右上角「？」再看。
+   不打断浏览：滚轮 / 轻扫照常生效，点到高亮的那个目标也不拦，只有点空处才收起。 */
+const guideEl=document.getElementById('guide'), gdRing=document.getElementById('gdRing'),
+      gdCard=document.getElementById('gdCard'), gdTitle=document.getElementById('gdTitle'),
+      gdBody=document.getElementById('gdBody'), gdDots=document.getElementById('gdDots'),
+      gdBar=document.getElementById('gdBar'), gdPrev=document.getElementById('gdPrev'),
+      gdNext=document.getElementById('gdNext'), gdSkip=document.getElementById('gdSkip'),
+      guideBtn=document.getElementById('guideBtn');
+const GUIDE_KEY='moon.guide.seen.v1';
+const GUIDE_STEPS=[
+  {t:'滚动 · 顺流而下', b:'向下滚动，就顺着时间长河漂下去——一句句诗与歌自会迎上来。向上回溯，向下向今。', cut:'view'},
+  {t:'拖着时间轴 · 一跃千年', b:'按住画面底部的时间轴左右拖动，或直接点击时间轴上的某一点，可以飞快跳到某个年代；圆点上方的年份，就是此刻所在的年代。', cut:'timeline'},
+  {t:'轻点一句 · 聚光成笺', b:'点一下任意一句诗或歌词，它会浮到月光里被照亮；双击，则直接收进拾月集。', cut:'entry'},
+  // 沉浸态（进入时间长河之后）里，月相由「点了哪一句」决定，而不是抚过月面——
+  // 抚月变幻是着陆页的手势，进来之后就不再生效。高亮仍落在月亮上：变化就发生在那里；
+  // 用户照做去点诗句时，点击由下方 onInteractive 放行，不会把指南误收起。
+  {t:'随句盈亏 · 变幻月相', b:'在「长河」模式下，点一下诗句或歌词，月相会随文字的语义内容变化。', cut:'moon'},
+  {t:'拾月集 · 收拢一笺清辉', b:'喜欢的句子收进右下角的「拾月集」，可以按住手柄上下排序，也能导出成文字或图片带走。', cut:'notebook'},
+];
+let gdIdx=0, gdRAF=0, gdTargetEl=null;
+function gdSeen(){ try{ return localStorage.getItem(GUIDE_KEY)==='1'; }catch(e){ return false; } }
+function gdMark(){ try{ localStorage.setItem(GUIDE_KEY,'1'); }catch(e){} }
+function gdPickEntry(){   // 取屏上最靠中心、且已经显影的那一句
+  const list=entriesEl.querySelectorAll('.entry');
+  const cx=innerWidth/2, cy=innerHeight/2;
+  let best=null, bd=1e9;
+  list.forEach(el=>{
+    if(parseFloat(el.style.opacity||'1')<0.25) return;
+    const r=el.getBoundingClientRect();
+    if(r.right<80||r.left>innerWidth-80||r.bottom<100||r.top>innerHeight-100) return;
+    const d=Math.hypot(r.left+r.width/2-cx, r.top+r.height/2-cy);
+    if(d<bd){ bd=d; best=el; }
+  });
+  return best;
+}
+function gdWrap(el){      // 贴合文字的实际外框（子元素并集），比整块盒子更准
+  const kids=[...el.children];
+  if(!kids.length) return el.getBoundingClientRect();
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  kids.forEach(k=>{
+    const r=k.getBoundingClientRect();
+    if(!r.width && !r.height) return;
+    x0=Math.min(x0,r.left); y0=Math.min(y0,r.top);
+    x1=Math.max(x1,r.right); y1=Math.max(y1,r.bottom);
+  });
+  return x0>1e8? el.getBoundingClientRect() : {left:x0, top:y0, right:x1, bottom:y1, width:x1-x0, height:y1-y0};
+}
+function gdPlace(){
+  const s=GUIDE_STEPS[gdIdx];
+  let r=null;
+  if(s.cut==='timeline'){
+    const b=tscrubEl.getBoundingClientRect();
+    r={x:b.left+8, y:b.top-4, w:b.width-16, h:b.height+8};
+  }else if(s.cut==='entry'){
+    if(gdTargetEl){ const b=gdWrap(gdTargetEl);
+      r={x:b.left-20, y:b.top-16, w:b.width+40, h:b.height+32}; }
+  }else if(s.cut==='moon'){
+    const m=moonScreen(), w=m.R*2.5;
+    r={x:m.cx-w/2, y:m.cy-w/2, w:w, h:w};
+  }else if(s.cut==='notebook'){
+    const b=document.getElementById('notebookBtn').getBoundingClientRect();
+    r={x:b.left-12, y:b.top-10, w:b.width+24, h:b.height+20};
+  }
+  if(!r){ gdRing.classList.remove('on'); guideEl.dataset.cut='0'; return; }
+  gdRing.style.left=r.x+'px'; gdRing.style.top=r.y+'px';
+  gdRing.style.width=r.w+'px'; gdRing.style.height=r.h+'px';
+  gdRing.classList.add('on'); guideEl.dataset.cut='1';
+}
+function gdLoop(){
+  if(!guideEl.classList.contains('on')){ gdRAF=0; return; }
+  gdPlace();
+  gdRAF=requestAnimationFrame(gdLoop);
+}
+function gdShow(i){
+  gdIdx=Math.max(0, Math.min(GUIDE_STEPS.length-1, i));
+  const s=GUIDE_STEPS[gdIdx];
+  gdTitle.textContent=s.t; gdBody.textContent=s.b;
+  [...gdDots.children].forEach((d,k)=>d.classList.toggle('on', k<=gdIdx));
+  gdBar.style.width=((gdIdx+1)/GUIDE_STEPS.length*100)+'%';
+  gdPrev.disabled = gdIdx===0;
+  gdNext.textContent = gdIdx===GUIDE_STEPS.length-1 ? '开始溯游' : '下一步';
+  gdTargetEl = s.cut==='entry' ? gdPickEntry() : null;
+  gdPlace();
+}
+function gdOpen(){
+  if(!state.landed) return;
+  if(!gdDots.children.length) GUIDE_STEPS.forEach(()=>gdDots.appendChild(document.createElement('i')));
+  guideEl.classList.add('on');
+  gdShow(0);
+  if(!gdRAF) gdRAF=requestAnimationFrame(gdLoop);
+}
+function gdClose(){
+  if(!guideEl.classList.contains('on')) return;
+  gdMark();
+  guideEl.classList.remove('on');
+  gdRing.classList.remove('on');
+  if(gdRAF){ cancelAnimationFrame(gdRAF); gdRAF=0; }
+}
+gdNext.addEventListener('click',()=>{ gdIdx>=GUIDE_STEPS.length-1 ? gdClose() : gdShow(gdIdx+1); });
+gdPrev.addEventListener('click',()=>gdShow(gdIdx-1));
+gdSkip.addEventListener('click',gdClose);
+guideBtn.addEventListener('click',gdOpen);
+addEventListener('keydown',ev=>{ if(ev.key==='Escape') gdClose(); });
+document.addEventListener('click',ev=>{
+  if(!guideEl.classList.contains('on')) return;
+  if(ev.target.closest('#gdCard')) return;
+  // 点在挖出的高亮区里 → 让它照常生效（比如真的点中一句、真的拖时间轴），不收起指南
+  const r=gdRing.getBoundingClientRect();
+  const onTarget = gdRing.classList.contains('on') &&
+    ev.clientX>=r.left && ev.clientX<=r.right && ev.clientY>=r.top && ev.clientY<=r.bottom;
+  // 点在诗句/歌词、顶部标签、模式按钮这类可交互目标上 → 也不收起：
+  // 第 4 步本就要用户「点一句诗看月相」，若此时把指南关掉，等于教到一半就散了。
+  const onInteractive = !!ev.target.closest('.entry,.chip,button');
+  if(!onTarget && !onInteractive) gdClose();
+},true);
+
 /* ---------------- 启动 ---------------- */
 buildFlow();
-selectEntry(0, true);
-// 初始 spot 在页面加载完成时立即浮现
-setTimeout(()=>{ if(state.selected===0 && state.landed && state.mode!=='world') showSpot(state.items[0]); }, 600);
 frame();
 </script>
 </body>
