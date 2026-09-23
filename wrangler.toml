@@ -1,0 +1,24 @@
+# ── Cloudflare Worker 部署配置：把本站作为「纯静态资产」托管 ──────────────
+# 参照 summertown/wrangler.toml 的 [assets] 写法；但本站是单文件静态站，
+# 没有 Worker 脚本 / 没有 D1 / 没有 R2，因此不需要 main、d1_databases、r2_buckets，
+# 只声明静态资产目录即可。（无 main 时，未匹配到资产的请求交给 not_found_handling 处理。）
+#
+# 部署命令：  cd 到本目录 && npx wrangler deploy
+# 部署后清缓存：Cloudflare 后台 → 对应 zone → Caching → Purge Everything
+#
+# ⚠️ 关键：name 必须与 Cloudflare 上「已经绑定了 moon.summercommences.com 的那个 Worker」
+#    完全一致。若不一致，wrangler 会新建一个 Worker，而自定义域仍指向旧的，
+#    页面看起来"没变化"。请到后台 Workers & Pages 核对名字后修改下面这行。
+name = "a-moon-of-my-own"
+
+# 兼容日期：仅影响 Workers 运行时行为，纯静态站无实质影响。
+compatibility_date = "2024-09-23"
+
+[assets]
+# 本项目的 index.html、audio/、textures/、hero.svg、og-image.jpg 等全部位于仓库根目录
+# （无构建产物目录），所以直接托管 "./"。
+# 注意：根目录同时含 .git 等文件，已在 .assetsignore 中排除，不会被上传。
+directory = "./"
+
+# 单页站点：未匹配到静态资产的路径回落到 index.html（方便直接刷新/分享任意路径）。
+not_found_handling = "single-page-application"

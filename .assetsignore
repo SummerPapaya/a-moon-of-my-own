@@ -1,0 +1,19 @@
+# 部署时不上传为公开静态资产（语法同 .gitignore）
+# 没有这个文件，wrangler deploy 会把整个目录都传上去——包括 .git（等于公开 git 历史）。
+# 详见 https://developers.cloudflare.com/workers/static-assets/binding/ → "Ignoring assets"
+
+.git
+.wrangler
+
+# 开发/仓库元数据，不是站点内容
+.DS_Store
+.gitattributes
+.gitignore
+.assetsignore
+README.md
+LICENSE
+
+# 部署配置本身也不对外提供
+wrangler.toml
+wrangler.jsonc
+wrangler.json
