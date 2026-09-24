@@ -7,6 +7,16 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === '/api/visits') {
+      // 允许跨域：离线小工具包 moon-minitool.zip 从 file:// 或 localhost 打开时，
+      // 调用的是本绝对地址，属于跨域请求，需要 CORS 才能累计进同一个全局计数器。
+      const cors = {
+        'access-control-allow-origin': '*',
+        'access-control-allow-methods': 'GET, POST, OPTIONS',
+        'access-control-allow-headers': 'content-type, accept',
+      };
+      if (request.method === 'OPTIONS') {
+        return new Response(null, { status: 204, headers: cors });
+      }
       let n = parseInt(await env.VISITS.get('count'), 10);
       if (!Number.isFinite(n) || n < 0) n = 0;
       if (request.method === 'POST') {
@@ -17,6 +27,7 @@ export default {
         headers: {
           'content-type': 'application/json; charset=utf-8',
           'cache-control': 'no-store',
+          ...cors,
         },
       });
     }
