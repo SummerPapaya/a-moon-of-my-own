@@ -416,7 +416,8 @@ body:not(.landing) .timeline-scrub{opacity:1;pointer-events:auto;}
 /* 高亮用「挖洞」实现：ring 的 box-shadow 铺满全屏，只有框内不被压暗 */
 .guide{position:fixed;inset:0;z-index:40;opacity:0;pointer-events:none;transition:opacity .9s ease;}
 .guide.on{opacity:1;}
-.gd-dim{position:absolute;inset:0;background:rgba(5,7,14,.46);transition:opacity .6s ease;}
+.gd-dim{position:absolute;inset:0;background:rgba(5,7,14,.46);transition:opacity .6s ease;pointer-events:none;}
+.guide.on .gd-dim{pointer-events:auto;}
 .guide[data-cut="1"] .gd-dim{opacity:0;}
 .gd-ring{
   position:absolute;border-radius:16px;opacity:0;pointer-events:none;
@@ -434,8 +435,9 @@ body:not(.landing) .timeline-scrub{opacity:1;pointer-events:auto;}
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   box-shadow:0 26px 64px rgba(0,0,0,.55);
   transition:bottom .7s cubic-bezier(.22,.8,.24,1);
-  pointer-events:auto;   /* .guide 整体 pointer-events:none（点空处才收起），但卡片本身要能接收点击 */
+  pointer-events:none;   /* 默认不拦截；仅当引导真正显示（.guide.on）时才可点，避免隐藏态吞掉底层点击 */
 }
+.guide.on .gd-card{pointer-events:auto;}
 .gd-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;}
 .gd-eyebrow{font-family:var(--kai);font-size:11px;letter-spacing:.34em;color:rgba(216,201,163,.5);}
 .gd-dots{display:flex;gap:6px;}
