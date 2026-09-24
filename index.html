@@ -355,9 +355,24 @@ body.landing .hint{animation:hintBreathe 2s ease-in-out infinite;bottom:44px;}
 .nb-count.on{display:inline-flex;}
 .nb-count.bump{animation:nbBump .6s ease;}
 @keyframes nbBump{30%{transform:scale(1.35);}100%{transform:scale(1);}}
-body.landing .credit-note,body.landing .notebook-btn{opacity:0 !important;pointer-events:none !important;}
+body.landing .credit-note,body.landing .notebook-btn,body.landing .podcast-link{opacity:0 !important;pointer-events:none !important;}
 .credit-note,.notebook-btn{transition:opacity 1.2s ease;}
 .notebook-btn{transition:opacity 1.2s ease,color .5s,border-color .5s,box-shadow .5s;}
+
+/* ---------- 同名播客外链（小宇宙） ---------- */
+.podcast-link{
+  position:fixed;z-index:8;right:26px;bottom:142px;
+  font-size:10.5px;letter-spacing:.16em;text-align:right;line-height:1.9;
+  color:rgba(216,201,163,.34);user-select:none;cursor:pointer;
+  text-decoration:none;
+  text-shadow:0 1px 3px rgba(2,4,10,.8);
+  transition:opacity 1.2s ease,color .5s ease,text-shadow .5s ease;
+}
+.podcast-link:hover{color:rgba(243,233,207,.92);text-shadow:0 0 14px rgba(216,201,163,.32);}
+.podcast-link .em{font-style:normal;opacity:.82;}
+@media (max-width:560px){
+  .podcast-link{right:12px;bottom:177px;font-size:8.5px;letter-spacing:.08em;line-height:1.7;}
+}
 
 /* 底部时间线滚轮：快速溯游 */
 .timeline-scrub{
@@ -462,7 +477,7 @@ body.landing .guide-btn{opacity:0 !important;pointer-events:none !important;}
 
 /* 月之声：无歌词月夜环境音 */
 .moon-audio{
-  position:fixed;z-index:9;right:22px;bottom:134px;
+  position:fixed;z-index:9;right:22px;bottom:182px;
   display:flex;flex-direction:column;gap:7px;align-items:flex-end;
   transition:opacity 1.2s ease;
 }
@@ -752,6 +767,7 @@ body.landing .moon-counter{opacity:0 !important;pointer-events:none !important;}
   <div class="ts-year" id="tsYear"></div>
 </div>
 <div class="credit-note">诗歌署名 · 皆为作者｜歌曲 · 演唱与词曲并署<br>世界诗乐 · 译文附译者</div>
+<a class="podcast-link" href="https://www.xiaoyuzhoufm.com/episode/6ab2f30f93d5eb3bdc797977" target="_blank" rel="noopener" title="在小宇宙收听同名歌单《我有一只月亮，挂在遥远天上》">♫ 我有一只月亮 · <span class="em">同名歌单</span></a>
 <div class="moon-counter" id="moonCounter"></div>
 <div class="moon-audio" id="moonAudio">
   <div class="au-credit">音频 · 月夜环境音（无词）· AI 生成</div>
