@@ -14,11 +14,23 @@ name = "a-moon-of-my-own"
 # 兼容日期：仅影响 Workers 运行时行为，纯静态站无实质影响。
 compatibility_date = "2024-09-23"
 
+# 启用 Worker 入口脚本：仅用于 /api/visits 全局访客计数（KV），其余请求交还静态资产。
+main = "./counter-worker.js"
+
 [assets]
 # 本项目的 index.html、audio/、textures/、hero.svg、og-image.jpg 等全部位于仓库根目录
 # （无构建产物目录），所以直接托管 "./"。
 # 注意：根目录同时含 .git 等文件，已在 .assetsignore 中排除，不会被上传。
 directory = "./"
 
+# 关键：把静态资产以 ASSETS 绑定暴露给 Worker 脚本（env.ASSETS）。
+# 不显式声明 binding，Worker 内 env.ASSETS 为 undefined，会导致非文件请求 1101。
+binding = "ASSETS"
+
 # 单页站点：未匹配到静态资产的路径回落到 index.html（方便直接刷新/分享任意路径）。
 not_found_handling = "single-page-application"
+
+# 访客计数用的 KV 命名空间（由 `wrangler kv namespace create VISITS` 创建，已存在 id 如下）
+[[kv_namespaces]]
+binding = "VISITS"
+id = "b2e6fb9e18264fcd9424382d91425ed7"

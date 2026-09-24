@@ -713,6 +713,19 @@ body.landing .moon-audio{opacity:0 !important;pointer-events:none !important;}
   0%{transform:translate(-50%,-50%) scale(.25);opacity:.9;}
   100%{transform:translate(-50%,-50%) scale(1);opacity:0;}
 }
+
+/* ---------- 访客计数（全局 KV 计数，按浏览器去重，近似独立访客数） ---------- */
+.moon-counter{
+  position:fixed;z-index:8;left:40px;bottom:74px;
+  font-family:var(--kai);font-size:12px;letter-spacing:.18em;text-indent:.04em;
+  color:rgba(216,201,163,.4);user-select:none;pointer-events:none;
+  text-shadow:0 1px 3px rgba(2,4,10,.8);
+  transition:opacity 1.2s ease;
+}
+body.landing .moon-counter{opacity:0 !important;pointer-events:none !important;}
+@media (max-width:560px){
+  .moon-counter{left:20px;bottom:70px;font-size:10.5px;letter-spacing:.1em;}
+}
 </style>
 </head>
 <body class="landing" data-mode="poem">
@@ -739,6 +752,7 @@ body.landing .moon-audio{opacity:0 !important;pointer-events:none !important;}
   <div class="ts-year" id="tsYear"></div>
 </div>
 <div class="credit-note">诗歌署名 · 皆为作者｜歌曲 · 演唱与词曲并署<br>世界诗乐 · 译文附译者</div>
+<div class="moon-counter" id="moonCounter"></div>
 <div class="moon-audio" id="moonAudio">
   <div class="au-credit">音频 · 月夜环境音（无词）· AI 生成</div>
   <div class="au-row">
@@ -819,6 +833,30 @@ import * as THREE from 'three';
 /* ============================================================
    我有一只月亮 · Three.js 沉浸式 3D 版
    ============================================================ */
+
+/* ---------------- 访客计数（全局 KV，按浏览器去重，近似独立访客数） ---------------- */
+(function(){
+  try{
+    var el=document.getElementById('moonCounter');
+    if(!el)return;
+    var KEY='moon_counted_v1';
+    var counted=false;
+    try{counted=localStorage.getItem(KEY)==='1';}catch(e){}
+    function show(n){ el.textContent='已有 '+n+' 人与月亮相遇'; }
+    function hide(){ el.style.display='none'; }
+    function go(){
+      var opt={method: counted?'GET':'POST', headers:{'accept':'application/json'}};
+      fetch('/api/visits',opt).then(function(r){return r.json();}).then(function(d){
+        if(d&&typeof d.count==='number'&&d.count>0){
+          show(d.count);
+          if(!counted){try{localStorage.setItem(KEY,'1');}catch(e){}}
+        } else { hide(); }
+      }).catch(function(){ hide(); });
+    }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go);
+    else go();
+  }catch(e){}
+})();
 
 /* ---------------- 数据 ---------------- */
 const PHASE_ANGLE = { full:0, crescent:130, waning:-130, half:80, 'first-quarter':90, 'half-waning':-80, new:180 };
@@ -3248,14 +3286,24 @@ const AU_TRACKS=[
 const auWrap=document.getElementById('moonAudio'), auToggleBtn=document.getElementById('auToggle'),
       auNextBtn=document.getElementById('auNext'), auLabelEl=document.getElementById('auLabel');
 const bgm=new Audio(); bgm.volume=.38; bgm.preload='none'; bgm.loop=true;
-let auOn=false, auWant=false, auIdx=-1;
+let auOn=false, auWant=false, auIdx=-1, auAvail=true;
+function auFail(){
+  // 资源加载失败（如离线包未含音频文件）：还原 UI，避免"显示正在播放却无声"
+  auAvail=false; auOn=false; auWant=false;
+  auWrap.classList.remove('on');
+  try{ bgm.pause(); }catch(e){}
+  auLabelEl.textContent='音频未随包提供';
+}
+// 仅在媒体资源真正加载失败时触发（文件存在时不会触发，线上站不受影响）
+bgm.addEventListener('error', auFail);
 function auPlay(i){
+  if(!auAvail) return;
   auIdx=i; const tr=AU_TRACKS[i];
   bgm.src='audio/'+tr.f;
   bgm.play().catch(()=>{});
   auLabelEl.textContent='正在听 · '+tr.n;
 }
-function auStart(){ auOn=true; auWrap.classList.add('on'); auPlay(Math.floor(Math.random()*AU_TRACKS.length)); }
+function auStart(){ if(!auAvail) return; auOn=true; auWrap.classList.add('on'); auPlay(Math.floor(Math.random()*AU_TRACKS.length)); }
 function auStop(){
   auOn=false; auWrap.classList.remove('on');
   bgm.pause();
@@ -3263,11 +3311,13 @@ function auStop(){
 }
 auToggleBtn.addEventListener('click', ev=>{
   ev.stopPropagation();
+  if(!auAvail) return;
   auWant=!auWant;
   if(auWant) auStart(); else auStop();
 });
 auNextBtn.addEventListener('click', ev=>{
   ev.stopPropagation();
+  if(!auAvail) return;
   if(!auOn){ auWant=true; auStart(); return; }
   auPlay((auIdx+1)%AU_TRACKS.length);
 });
